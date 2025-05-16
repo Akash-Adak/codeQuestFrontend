@@ -13,7 +13,7 @@ import {
   FaSlash,
 } from "react-icons/fa";
 
-const Whiteboard = () => {
+const WhiteBoard = () => {
   const canvasRef = useRef(null);
   const ctxRef = useRef(null);
   const inputRef = useRef(null);
