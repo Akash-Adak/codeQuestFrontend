@@ -288,4 +288,4 @@ const ToolButton = ({ icon, tool, current, setTool }) => (
   </button>
 );
 
-export default Whiteboard;
+export default WhiteBoard;
