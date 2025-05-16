@@ -18,7 +18,7 @@ const SignUp = ({ onSignUpSuccess }) => {
     setError("");
     setLoading(true);
     try {
-      const res = await fetch("http://localhost:8080/public/signup", {
+      const res = await fetch("http://localhost:https://codequestbackend-1.onrender.com/public/signup", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ username, password, email }),
@@ -43,7 +43,7 @@ const SignUp = ({ onSignUpSuccess }) => {
     setError("");
     setLoading(true);
     try {
-      const res = await fetch("http://localhost:8080/public/verify", {
+      const res = await fetch("http://localhost:https://codequestbackend-1.onrender.com/public/verify", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email, code }),
@@ -67,7 +67,7 @@ const SignUp = ({ onSignUpSuccess }) => {
 
   // Optional: Google login (unchanged)
   const handleGoogleLogin = () => {
-    window.location.href = "http://localhost:8080/oauth2/authorization/google";
+    window.location.href = "http://localhost:https://codequestbackend-1.onrender.com/oauth2/authorization/google";
   };
 
   return (

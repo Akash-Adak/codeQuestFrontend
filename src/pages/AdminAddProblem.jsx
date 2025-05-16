@@ -56,7 +56,7 @@ const AdminAddProblem = ({ socket, roomId }) => {
     };
 
     try {
-      const response = await fetch("http://localhost:8080/api/problems", {
+      const response = await fetch("http://localhost:https://codequestbackend-1.onrender.com/api/problems", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(payload),

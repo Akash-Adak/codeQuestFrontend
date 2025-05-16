@@ -19,7 +19,7 @@ const ProfilePage = () => {
       const token = localStorage.getItem("token");
 
       try {
-        const res = await fetch("http://localhost:8080/user", {
+        const res = await fetch("https://codequestbackend-1.onrender.com/user", {
           headers: {
             Authorization: `Bearer ${token}`,
           },

@@ -17,7 +17,7 @@ const Login = ({ onLoginSuccess }) => {
     setError("");
     setLoading(true);
 
-    fetch("http://localhost:8080/public/login", {
+    fetch("http://localhost:https://codequestbackend-1.onrender.com/public/login", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ username: email, password }),
@@ -48,7 +48,7 @@ const Login = ({ onLoginSuccess }) => {
   };
 
   const handleGoogleLogin = () => {
-    window.location.href = "http://localhost:8080/auth/google/callback";
+    window.location.href = "http://localhost:https://codequestbackend-1.onrender.com/auth/google/callback";
   };
 
   return (

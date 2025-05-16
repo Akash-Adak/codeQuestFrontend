@@ -87,7 +87,7 @@ const RoomPage = () => {
   };
 
   const handleRunCode = async () => {
-    const response = await fetch("http://localhost:8080/execute", {
+    const response = await fetch("https://codequestbackend-1.onrender.com/execute", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ code, language }),

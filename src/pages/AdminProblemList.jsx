@@ -11,7 +11,7 @@ const AdminProblemList = () => {
   const fetchProblems = async () => {
     setLoading(true); // Start loading
     try {
-      const response = await fetch("http://localhost:8080/api/problems");
+      const response = await fetch("https://codequestbackend-1.onrender.com/api/problems");
       if (response.ok) {
         const data = await response.json();
         setProblems(data);
@@ -28,7 +28,7 @@ const AdminProblemList = () => {
   const handleDelete = async (problemId) => {
     if (window.confirm("Are you sure you want to delete this problem?")) {
       try {
-        const response = await fetch(`http://localhost:8080/api/problems/${problemId}`, {
+        const response = await fetch(`http://localhost:https://codequestbackend-1.onrender.com/api/problems/${problemId}`, {
           method: "DELETE",
         });
 

@@ -56,7 +56,7 @@ const CodeEditor = ({ roomId, participant }) => {
 
   const handleRunCode = async () => {
     try {
-      const response = await axios.post("http://localhost:8080/api/code/run", {
+      const response = await axios.post("http://localhost:https://codequestbackend-1.onrender.com/api/code/run", {
         code,
         languageId,
         input,
