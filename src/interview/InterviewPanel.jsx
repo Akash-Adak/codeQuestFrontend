@@ -4,12 +4,12 @@ import SockJS from 'sockjs-client';
 import { over } from 'stompjs';
 import { FaVideo, FaVideoSlash, FaMicrophone, FaMicrophoneSlash } from "react-icons/fa";
 import CodeEditor from '../components/CodeEditor';
-import Whiteboard from '../interview/WhiteBoard';
+import WhiteBoard from '../interview/WhiteBoard';
 import { useLocation ,useNavigate} from 'react-router-dom';
 
 const InterviewPanel = () => {
     const navigate=useNavigate();
-  const [showWhiteboard, setShowWhiteboard] = useState(false);
+  const [showWhiteBoard, setShowWhiteBoard] = useState(false);
   const [code, setCode] = useState('// Start coding here...');
   const [seconds, setSeconds] = useState(0);
   const [isRunning, setIsRunning] = useState(false);
@@ -156,13 +156,13 @@ const endSession = () => {
       <div className="w-full lg:w-2/3 p-4 flex flex-col">
         <div className="flex justify-between items-center mb-3">
           <h2 className="text-xl font-semibold">
-            {showWhiteboard ? '📝 Whiteboard' : '💻 Code Editor'}
+            {showWhiteBoard ? '📝 WhiteBoard' : '💻 Code Editor'}
           </h2>
           <button
-            onClick={() => setShowWhiteboard(!showWhiteboard)}
+            onClick={() => setShowWhiteBoard(!showWhiteBoard)}
             className="px-4 py-2 rounded bg-blue-600 text-white hover:bg-blue-700"
           >
-            {showWhiteboard ? 'Editor' : 'Whiteboard'}
+            {showWhiteBoard ? 'Editor' : 'WhiteBoard'}
           </button>
         </div>
 
@@ -177,7 +177,7 @@ const endSession = () => {
         </div>
 
         <div className="flex-grow border rounded shadow-inner bg-gray-100 dark:bg-gray-800 p-2 overflow-auto">
-          {showWhiteboard ? <Whiteboard /> : <CodeEditor code={code} onChange={setCode} />}
+          {showWhiteBoard ? <WhiteBoard /> : <CodeEditor code={code} onChange={setCode} />}
         </div>
       </div>
 
