@@ -17,7 +17,7 @@ const Login = ({ onLoginSuccess }) => {
     setError("");
     setLoading(true);
 
-    fetch("http://localhost:https://codequestbackend-1.onrender.com/public/login", {
+    fetch("https://codequestbackend-1.onrender.com/public/login", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ username: email, password }),
