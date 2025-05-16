@@ -1,0 +1,158 @@
+/* src/styles/Navbar.css */
+
+/* General styles for the navbar */
+.navbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 20px;
+  background-color: var(--bg-color);
+  color: var(--text-color);
+  transition: background-color 0.3s, color 0.3s;
+}
+
+.navbar-logo a {
+  font-size: 1.5em;
+  font-weight: bold;
+  text-decoration: none;
+  color: var(--text-color);
+}
+
+.menu-icon {
+  display: none;
+  font-size: 1.5em;
+  cursor: pointer;
+}
+
+/* Search bar */
+.navbar-search {
+  display: flex;
+  align-items: center;
+  background-color: var(--input-bg);
+  border-radius: 4px;
+  padding: 5px 10px;
+  transition: background-color 0.3s;
+}
+
+.navbar-search input {
+  background: transparent;
+  border: none;
+  outline: none;
+  color: var(--text-color);
+  padding: 5px 10px;
+  flex: 1;
+}
+
+.navbar-search.focused input {
+  border: 1px solid var(--primary-color);
+}
+
+.search-icon {
+  margin-right: 8px;
+}
+
+/* Navbar buttons (profile, dark mode) */
+.navbar-buttons {
+  display: flex;
+  align-items: center;
+}
+
+.navbar-buttons button {
+  background: transparent;
+  border: none;
+  color: var(--text-color);
+  cursor: pointer;
+  font-size: 1.2em;
+  margin-left: 20px;
+  transition: color 0.3s;
+}
+
+.navbar-buttons button:hover {
+  color: var(--primary-color);
+}
+
+/* Profile dropdown */
+.profile-dropdown {
+  position: relative;
+}
+
+.dropdown-menu {
+  display: none;
+  position: absolute;
+  top: 35px;
+  right: 0;
+  background-color: var(--input-bg);
+  border-radius: 8px;
+  box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+  z-index: 100;
+}
+
+.dropdown-menu.show {
+  display: block;
+}
+
+.dropdown-item {
+  padding: 10px 15px;
+  text-decoration: none;
+  color: var(--text-color);
+  display: block;
+  transition: background-color 0.3s;
+}
+
+.dropdown-item:hover {
+  background-color: var(--primary-color-light);
+}
+
+.logout {
+  background-color: var(--error-color);
+  color: #fff;
+  border-radius: 4px;
+}
+
+.logout:hover {
+  background-color: var(--error-color-dark);
+}
+
+/* Mobile responsive styles */
+@media (max-width: 768px) {
+  .navbar {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .menu-icon {
+    display: block;
+    margin-bottom: 15px;
+  }
+
+  .navbar-search.active {
+    display: block;
+    width: 100%;
+    margin-top: 10px;
+  }
+
+  .navbar-buttons {
+    flex-direction: column;
+    margin-top: 10px;
+  }
+}
+
+/* Dark mode and light mode styling */
+:root {
+  --bg-color: #ffffff;
+  --text-color: #000000;
+  --primary-color: #007bff;
+  --primary-color-light: #0056b3;
+  --input-bg: #f0f0f0;
+  --error-color: #f44336;
+  --error-color-dark: #e53935;
+}
+
+.dark {
+  --bg-color: #1e1e1e;
+  --text-color: #f1f1f1;
+  --primary-color: #ff9f00;
+  --primary-color-light: #ff5e00;
+  --input-bg: #2a2a2a;
+}
+

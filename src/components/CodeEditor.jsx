@@ -1,0 +1,219 @@
+import React, { useState, useEffect, useRef } from "react";
+import axios from "axios";
+import Editor from "@monaco-editor/react";
+import { useTheme } from "../context/ThemeContext";
+import WebSocketService from "../services/WebSocketService";
+import {
+  FaPlay,
+  FaTrash,
+  FaCopy,
+  FaJava,
+  FaExchangeAlt,
+} from "react-icons/fa";
+import { SiPython, SiJavascript, SiCplusplus, SiC } from "react-icons/si";
+
+const CodeEditor = ({ roomId, participant }) => {
+  const { darkMode } = useTheme();
+  const [code, setCode] = useState("print('Hello, World!')");
+  const [languageId, setLanguageId] = useState("71");
+  const [language, setLanguage] = useState("python");
+  const [output, setOutput] = useState("");
+  const [input, setInput] = useState("");
+  const [activePanel, setActivePanel] = useState("input"); // "input" or "output"
+  const [isVerticalLayout, setIsVerticalLayout] = useState(false);
+  const codeRef = useRef(code);
+
+  // WebSocket connection
+  useEffect(() => {
+    WebSocketService.connect(
+      roomId,
+      () => {
+        WebSocketService.sendMessage(
+          JSON.stringify({ type: "join", participant }),
+          `/app/code/${roomId}`
+        );
+      },
+      (message) => {
+        if (typeof message === "string") {
+          setCode(message);
+          codeRef.current = message;
+        }
+      },
+      () => {},
+      () => {
+        console.error("WebSocket connection error.");
+      }
+    );
+
+    return () => {
+      WebSocketService.sendMessage(
+        JSON.stringify({ type: "leave", participant }),
+        `/app/code/${roomId}`
+      );
+      WebSocketService.disconnect();
+    };
+  }, [roomId, participant]);
+
+  const handleRunCode = async () => {
+    try {
+      const response = await axios.post("http://localhost:8080/api/code/run", {
+        code,
+        languageId,
+        input,
+      });
+      setOutput(response.data.output || response.data.error || "No output.");
+    } catch (error) {
+      setOutput(error.response?.data?.error || "Execution failed.");
+    }
+  };
+
+  const handleCodeChange = (newCode) => {
+    setCode(newCode);
+    codeRef.current = newCode;
+    WebSocketService.sendCodeMessage(newCode);
+  };
+
+  const handleLanguageChange = (val) => {
+    setLanguageId(val);
+    const langMap = { 71: "python", 62: "java", 63: "javascript", 54: "cpp", 50: "c" };
+    setLanguage(langMap[val]);
+  };
+
+  const getLanguageIcon = () => {
+    const iconStyle = { fontSize: "1.2rem" };
+    return languageId === "71" ? <SiPython style={iconStyle} /> :
+      languageId === "63" ? <SiJavascript style={iconStyle} /> :
+        languageId === "62" ? <FaJava style={iconStyle} /> :
+          languageId === "54" ? <SiCplusplus style={iconStyle} /> :
+            <SiC style={iconStyle} />;
+  };
+
+  const renderEditor = () => (
+    <div className="p-4 w-full">
+      <div className="mb-2 flex justify-end gap-2">
+        <button
+          onClick={() => navigator.clipboard.writeText(code)}
+          title="Copy Code"
+          className="bg-green-600 hover:bg-green-700 text-white p-2 rounded-md"
+        >
+          <FaCopy />
+        </button>
+      </div>
+      <Editor
+        height="calc(100vh - 140px)"
+        language={language}
+        theme={darkMode ? "vs-dark" : "light"}
+        value={code}
+        onChange={handleCodeChange}
+        options={{
+          fontSize: 14,
+          minimap: { enabled: false },
+          autoClosingBrackets: "always",
+          autoClosingQuotes: "always",
+          automaticLayout: true,
+        }}
+      />
+    </div>
+  );
+
+  const renderPanelToggle = () => (
+    <div className="flex gap-2 mb-2">
+      <button
+        onClick={() => setActivePanel("input")}
+        className={`px-3 py-1 rounded-md ${activePanel === "input" ? "bg-indigo-600 text-white" : "bg-gray-300 dark:bg-gray-700 text-black dark:text-white"}`}
+      >
+        Custom Input
+      </button>
+      <button
+        onClick={() => setActivePanel("output")}
+        className={`px-3 py-1 rounded-md ${activePanel === "output" ? "bg-indigo-600 text-white" : "bg-gray-300 dark:bg-gray-700 text-black dark:text-white"}`}
+      >
+        Output
+      </button>
+    </div>
+  );
+
+  const renderInputOutput = () => (
+    <div className="p-4 w-full h-full flex flex-col">
+      {renderPanelToggle()}
+      {activePanel === "input" ? (
+        <textarea
+          className="w-full h-full p-3 rounded-md bg-gray-100 dark:bg-gray-800 text-black dark:text-white"
+          placeholder="Enter custom input here..."
+          value={input}
+          onChange={(e) => setInput(e.target.value)}
+        />
+      ) : (
+        <div className="flex flex-col h-full">
+          <div className="flex justify-end gap-2 mb-2">
+            <button
+              className="bg-red-500 hover:bg-red-600 px-3 py-1 rounded-md"
+              onClick={() => setOutput("")}
+              title="Clear Output"
+            >
+              <FaTrash />
+            </button>
+            <button
+              className="bg-green-500 hover:bg-green-600 px-3 py-1 rounded-md"
+              onClick={() => navigator.clipboard.writeText(output)}
+              title="Copy Output"
+            >
+              <FaCopy />
+            </button>
+          </div>
+          <div className="bg-gray-900 text-white rounded-md p-3 h-full overflow-auto">
+            <pre>{output || "No output yet."}</pre>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+
+  return (
+    <div className={`flex flex-col min-h-screen ${darkMode ? "bg-gray-900 text-white" : "bg-white text-black"}`}>
+      {/* Header */}
+      <div className="flex justify-between items-center px-6 py-4 border-b border-gray-700 bg-gray-800 dark:bg-gray-900">
+        <div className="flex items-center gap-4">
+          <div className="flex items-center gap-2">
+            {getLanguageIcon()}
+            <select
+              value={languageId}
+              onChange={(e) => handleLanguageChange(e.target.value)}
+              className="bg-gray-700 text-white p-2 rounded-md"
+            >
+              <option value="71">Python</option>
+              <option value="62">Java</option>
+              <option value="63">JavaScript</option>
+              <option value="54">C++</option>
+              <option value="50">C</option>
+            </select>
+          </div>
+          <button
+            onClick={handleRunCode}
+            className="bg-indigo-600 hover:bg-indigo-700 text-white py-2 px-4 rounded-md flex items-center gap-2"
+            title="Run Code"
+          >
+            <FaPlay /> Run
+          </button>
+        </div>
+      </div>
+
+      {/* Content */}
+      <div className="flex-1 overflow-hidden">
+        {isVerticalLayout ? (
+          <div className="flex flex-col lg:flex-row h-full">
+            <div className="lg:w-full">{renderEditor()}</div>
+            <div className="lg:w-full">{renderInputOutput()}</div>
+          </div>
+        ) : (
+          <div className="flex flex-col lg:flex-row h-full">
+            <div className="lg:w-1/2">{renderEditor()}</div>
+            <div className="lg:w-1/2">{renderInputOutput()}</div>
+          </div>
+        )}
+      </div>
+    </div>
+  );
+};
+
+export default CodeEditor;
