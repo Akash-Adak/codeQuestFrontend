@@ -26,7 +26,7 @@ import AdminProblemList from "./pages/AdminProblemList";
 // import AdminProblemList from "./AdminProblemList";
 import ProblemEditor from "./pages/ProblemEditor";
 import PeerMatchPage from "./interview/PeerMatchPage";
-import Whiteboard from "./interview/Whiteboard";
+import WhiteBoard from "./interview/WhiteBoard";
 import { AuthProvider } from './context/AuthContext';
 
 function App() {
@@ -119,7 +119,7 @@ function App() {
           <Route path="/mockInterview" element={<ProtectedRoute><MockInterviewSetup /></ProtectedRoute>} />
 
           {/* Whiteboard Page */}
-          <Route path="/whiteboard" element={<Whiteboard />} />
+          <Route path="/whiteboard" element={<WhiteBoard />} />
 
           {/* Fallback route */}
           <Route path="*" element={<Navigate to="/" replace />} />
