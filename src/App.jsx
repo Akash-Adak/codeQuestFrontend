@@ -26,7 +26,7 @@ import AdminProblemList from "./pages/AdminProblemList";
 // import AdminProblemList from "./AdminProblemList";
 import ProblemEditor from "./pages/ProblemEditor";
 import PeerMatchPage from "./interview/PeerMatchPage";
-import WhiteBoard from "./interview/WhiteBoard";
+import WhiteBoard from './interview/WhiteBoard';
 import { AuthProvider } from './context/AuthContext';
 
 function App() {
