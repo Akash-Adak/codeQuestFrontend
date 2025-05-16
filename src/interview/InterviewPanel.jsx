@@ -4,7 +4,7 @@ import SockJS from 'sockjs-client';
 import { over } from 'stompjs';
 import { FaVideo, FaVideoSlash, FaMicrophone, FaMicrophoneSlash } from "react-icons/fa";
 import CodeEditor from '../components/CodeEditor';
-import Whiteboard from '../interview/Whiteboard';
+import Whiteboard from '../interview/WhiteBoard';
 import { useLocation ,useNavigate} from 'react-router-dom';
 
 const InterviewPanel = () => {
