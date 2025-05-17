@@ -8,7 +8,7 @@ import WhiteBoard from '../interview/WhiteBoard';
 import { useLocation ,useNavigate} from 'react-router-dom';
 
 const InterviewPanel = () => {
-    const navigate=useNavigate();
+  const navigate=useNavigate();
   const [showWhiteBoard, setShowWhiteBoard] = useState(false);
   const [code, setCode] = useState('// Start coding here...');
   const [seconds, setSeconds] = useState(0);
@@ -21,6 +21,8 @@ const InterviewPanel = () => {
   const [sessionId, setSessionId] = useState('');
   const [interviewerName, setInterviewerName] = useState('');
 
+  // Participant list and self status
+  const [participants, setParticipants] = useState([]);
   const [videoEnabled1, setVideoEnabled1] = useState(true);
   const [audioEnabled1, setAudioEnabled1] = useState(true);
 
@@ -30,6 +32,7 @@ const InterviewPanel = () => {
   const location = useLocation();
   const sessionIdFromState = location?.state?.sessionId || '';
 
+  // On mount get sessionId and name
   useEffect(() => {
     if (sessionIdFromState) {
       setSessionId(sessionIdFromState);
@@ -44,6 +47,7 @@ const InterviewPanel = () => {
     }
   }, []);
 
+  // Enable/disable webcam video/audio tracks
   useEffect(() => {
     if (webcamRef1.current && webcamRef1.current.stream) {
       const videoTrack = webcamRef1.current.stream.getVideoTracks()[0];
@@ -53,6 +57,7 @@ const InterviewPanel = () => {
     }
   }, [videoEnabled1, audioEnabled1]);
 
+  // Timer logic
   useEffect(() => {
     let interval;
     if (isRunning) {
@@ -61,6 +66,7 @@ const InterviewPanel = () => {
     return () => clearInterval(interval);
   }, [isRunning]);
 
+  // Connect/disconnect websocket on session join/leave
   useEffect(() => {
     if (joinedSession && sessionId) {
       connectWebSocket();
@@ -69,22 +75,37 @@ const InterviewPanel = () => {
     return () => disconnectWebSocket();
   }, [joinedSession, sessionId]);
 
+  // Scroll chat down on new messages
   useEffect(() => {
     if (chatBoxRef.current) {
       chatBoxRef.current.scrollTop = chatBoxRef.current.scrollHeight;
     }
   }, [chatMessages]);
 
+  // Update self status in participants when video/audio changes
+  useEffect(() => {
+    updateSelfStatus();
+    sendParticipantStatus();
+  }, [videoEnabled1, audioEnabled1]);
+
   const connectWebSocket = () => {
     const socket = new SockJS('/ws');
     stompClient.current = over(socket);
     stompClient.current.connect({}, () => {
+      // Subscribe to chat messages
       stompClient.current.subscribe(`/topic/${sessionId}`, (message) => {
         if (message.body) {
           const msg = JSON.parse(message.body);
-          setChatMessages((prev) => [...prev, msg]);
+          // Check if message is chat or participant update
+          if (msg.type === 'chat') {
+            setChatMessages((prev) => [...prev, msg.data]);
+          } else if (msg.type === 'participant') {
+            handleParticipantUpdate(msg.data);
+          }
         }
       });
+      // Notify server of new participant join
+      sendParticipantJoin();
     }, (err) => {
       console.error("WebSocket connection error:", err);
     });
@@ -92,23 +113,124 @@ const InterviewPanel = () => {
 
   const disconnectWebSocket = () => {
     if (stompClient.current?.connected) {
+      // Notify server of participant leaving
+      sendParticipantLeave();
+
       stompClient.current.disconnect(() => {
         console.log('Disconnected WebSocket');
       });
     }
   };
 
+  // Send chat message
   const sendMessage = () => {
     if (chatInput.trim() && stompClient.current?.connected && sessionId) {
       const message = {
-        from: interviewerName || 'User',
-        content: chatInput.trim()
+        type: 'chat',
+        data: {
+          from: interviewerName || 'User',
+          content: chatInput.trim()
+        }
       };
       stompClient.current.send(`/topic/${sessionId}`, {}, JSON.stringify(message));
       setChatInput('');
     }
   };
 
+  // Notify server participant joined
+  const sendParticipantJoin = () => {
+    if (stompClient.current?.connected && sessionId) {
+      const participant = {
+        name: interviewerName || 'User',
+        video: videoEnabled1,
+        audio: audioEnabled1,
+        self: true,
+      };
+      const message = {
+        type: 'participant',
+        data: {
+          action: 'join',
+          participant,
+        }
+      };
+      stompClient.current.send(`/topic/${sessionId}`, {}, JSON.stringify(message));
+      // Also add self locally
+      setParticipants((prev) => {
+        if (!prev.find(p => p.name === participant.name)) {
+          return [...prev, participant];
+        }
+        return prev;
+      });
+    }
+  };
+
+  // Notify server participant left
+  const sendParticipantLeave = () => {
+    if (stompClient.current?.connected && sessionId) {
+      const message = {
+        type: 'participant',
+        data: {
+          action: 'leave',
+          name: interviewerName || 'User'
+        }
+      };
+      stompClient.current.send(`/topic/${sessionId}`, {}, JSON.stringify(message));
+    }
+  };
+
+  // Notify server participant updated video/audio status
+  const sendParticipantStatus = () => {
+    if (stompClient.current?.connected && sessionId) {
+      const participant = {
+        name: interviewerName || 'User',
+        video: videoEnabled1,
+        audio: audioEnabled1,
+        self: true,
+      };
+      const message = {
+        type: 'participant',
+        data: {
+          action: 'update',
+          participant,
+        }
+      };
+      stompClient.current.send(`/topic/${sessionId}`, {}, JSON.stringify(message));
+    }
+  };
+
+  // Handle participant join/leave/update from server messages
+  const handleParticipantUpdate = (data) => {
+    const { action, participant, name } = data;
+    setParticipants((prev) => {
+      if (action === 'join' && participant) {
+        // Add participant if not exists
+        if (!prev.find(p => p.name === participant.name)) {
+          return [...prev, participant];
+        }
+      } else if (action === 'leave' && name) {
+        // Remove participant by name
+        return prev.filter(p => p.name !== name);
+      } else if (action === 'update' && participant) {
+        // Update participant video/audio
+        return prev.map(p => p.name === participant.name ? { ...p, video: participant.video, audio: participant.audio } : p);
+      }
+      return prev;
+    });
+  };
+
+  // Update self participant info in list locally when toggling video/audio
+  const updateSelfStatus = () => {
+    setParticipants((prev) => {
+      return prev.map(p => {
+        if (p.name === (interviewerName || 'User')) {
+          return { ...p, video: videoEnabled1, audio: audioEnabled1, self: true };
+        }
+        return p;
+      });
+    });
+  };
+
+  // File upload and fetch functions
   const handleFileUpload = async (e) => {
     const file = e.target.files[0];
     if (!file) return;
@@ -141,15 +263,16 @@ const InterviewPanel = () => {
     const sec = s % 60;
     return `${m.toString().padStart(2, '0')}:${sec.toString().padStart(2, '0')}`;
   };
-const endSession = () => {
+
+  const endSession = () => {
     if (window.confirm("Are you sure you want to end the session?")) {
       // Handle session end logic (e.g., notifying participants, stopping WebSocket, etc.)
       disconnectWebSocket();
-
       navigate("/InterviewTypes");
       // Optionally, redirect to a different page
     }
   };
+
   return (
     <div className="flex flex-col lg:flex-row h-screen bg-white dark:bg-gray-900 text-gray-800 dark:text-white transition-colors">
       {/* Left Panel */}
@@ -160,151 +283,196 @@ const endSession = () => {
           </h2>
           <button
             onClick={() => setShowWhiteBoard(!showWhiteBoard)}
-            className="px-4 py-2 rounded bg-blue-600 text-white hover:bg-blue-700"
-          >
-            {showWhiteBoard ? 'Editor' : 'WhiteBoard'}
-          </button>
-        </div>
+            class Name="px-3 py-1 rounded bg-indigo-600 text-white hover:bg-indigo-700 transition"
+                  >
+                  {showWhiteBoard ? 'Show Editor' : 'Show WhiteBoard'}
+                  </button>
+                  </div>
+                      <div className="flex-1 border rounded shadow-md overflow-hidden bg-gray-50 dark:bg-gray-800">
+                        {showWhiteBoard ? (
+                          <WhiteBoard />
+                        ) : (
+                          <CodeEditor code={code} onChange={setCode} />
+                        )}
+                      </div>
 
-        <div className="flex justify-start items-center mb-2">
-          <button
-            onClick={() => setIsRunning((prev) => !prev)}
-            className="text-blue-600 font-medium focus:outline-none"
-            title={isRunning ? "Pause" : "Start"}
-          >
-            🕒 {formatTime(seconds)}
-          </button>
-        </div>
+                      {/* Timer and Controls */}
+                      <div className="flex justify-between items-center mt-3 space-x-3">
+                        <div className="text-lg font-mono tracking-widest">
+                          Timer: <span className="font-bold">{formatTime(seconds)}</span>
+                        </div>
+                        <div className="space-x-2">
+                          {!isRunning ? (
+                            <button
+                              onClick={() => setIsRunning(true)}
+                              className="px-3 py-1 rounded bg-green-600 hover:bg-green-700 text-white transition"
+                            >
+                              Start
+                            </button>
+                          ) : (
+                            <button
+                              onClick={() => setIsRunning(false)}
+                              className="px-3 py-1 rounded bg-yellow-500 hover:bg-yellow-600 text-white transition"
+                            >
+                              Pause
+                            </button>
+                          )}
+                          <button
+                            onClick={() => setSeconds(0)}
+                            className="px-3 py-1 rounded bg-red-600 hover:bg-red-700 text-white transition"
+                          >
+                            Reset
+                          </button>
+                          <button
+                            onClick={endSession}
+                            className="px-3 py-1 rounded bg-gray-600 hover:bg-gray-700 text-white transition"
+                            title="End Session"
+                          >
+                            End Session
+                          </button>
+                        </div>
+                      </div>
+                    </div>
 
-        <div className="flex-grow border rounded shadow-inner bg-gray-100 dark:bg-gray-800 p-2 overflow-auto">
-          {showWhiteBoard ? <WhiteBoard /> : <CodeEditor code={code} onChange={setCode} />}
-        </div>
-      </div>
+                    {/* Right Panel */}
+                    <div className="w-full lg:w-1/3 p-4 flex flex-col border-l border-gray-300 dark:border-gray-700">
+                      {/* Webcam & Controls */}
+                      <div className="mb-4">
+                        <h3 className="text-lg font-semibold mb-2">Your Webcam</h3>
+                        <div className="relative w-full aspect-video bg-black rounded overflow-hidden mb-2">
+                          <Webcam
+                            audio={true}
+                            mirrored={true}
+                            ref={webcamRef1}
+                            videoConstraints={{ facingMode: "user" }}
+                            className="w-full h-full object-cover"
+                          />
+                        </div>
+                        <div className="flex justify-center space-x-6">
+                          <button
+                            onClick={() => setVideoEnabled1((v) => !v)}
+                            className={`p-2 rounded-full border-2 ${
+                              videoEnabled1
+                                ? 'border-green-500 text-green-600 hover:bg-green-100'
+                                : 'border-red-500 text-red-600 hover:bg-red-100'
+                            } transition`}
+                            title={videoEnabled1 ? "Turn off Video" : "Turn on Video"}
+                          >
+                            {videoEnabled1 ? <FaVideo size={20} /> : <FaVideoSlash size={20} />}
+                          </button>
+                          <button
+                            onClick={() => setAudioEnabled1((a) => !a)}
+                            className={`p-2 rounded-full border-2 ${
+                              audioEnabled1
+                                ? 'border-green-500 text-green-600 hover:bg-green-100'
+                                : 'border-red-500 text-red-600 hover:bg-red-100'
+                            } transition`}
+                            title={audioEnabled1 ? "Mute Microphone" : "Unmute Microphone"}
+                          >
+                            {audioEnabled1 ? <FaMicrophone size={20} /> : <FaMicrophoneSlash size={20} />}
+                          </button>
+                        </div>
+                      </div>
 
-      {/* Right Panel */}
-      <div className="w-full lg:w-1/3 p-4 space-y-4 overflow-y-auto bg-gray-50 dark:bg-gray-800 border-l">
-        {/* Info */}
-        <div className="p-4 bg-white dark:bg-gray-700 rounded shadow">
-          <h4 className="text-white-600 dark:bg-white-600"><span className="font-semibold text-white-600">Interviewer:</span> {interviewerName}</h4>
-          <h4 className="text-blue-600 font-semibold">Session ID</h4>
-          <p className="break-words">{sessionId}</p>
-           {sessionId && (
-                    <button
-                      className="bg-blue-600 hover:bg-blue-700 text-white text-sm px-4 py-2 rounded flex items-center space-x-2"
-                      onClick={() => {
-                        const url = `${window.location.origin}/interviewPanel/${sessionId}`;
-                        navigator.clipboard.writeText(url);
-                        alert("Meeting link copied to clipboard!");
-                      }}
-                    >
-                      <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2"
-                        viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                        <path strokeLinecap="round" strokeLinejoin="round"
-                          d="M8 16h8m-4-4v4m0 0v4m0-4H8m4 0h4"></path>
-                      </svg>
-                      <span>Copy Link</span>
-                    </button>
-                  )}
+                      {/* Participant List */}
+                      <div className="mb-4 flex-1 overflow-y-auto">
+                        <h3 className="text-lg font-semibold mb-2">Participants ({participants.length})</h3>
+                        <ul className="space-y-2">
+                          {participants.map((p) => (
+                            <li
+                              key={p.name}
+                              className={`flex items-center justify-between p-2 rounded border ${
+                                p.self ? 'border-indigo-500 bg-indigo-100 dark:bg-indigo-900' : 'border-gray-300 dark:border-gray-700'
+                              }`}
+                            >
+                              <span className="font-medium truncate">{p.name}</span>
+                              <div className="flex items-center space-x-3">
+                                <span title={p.video ? "Video On" : "Video Off"}>
+                                  {p.video ? (
+                                    <FaVideo className="text-green-600" />
+                                  ) : (
+                                    <FaVideoSlash className="text-red-600" />
+                                  )}
+                                </span>
+                                <span title={p.audio ? "Audio On" : "Audio Off"}>
+                                  {p.audio ? (
+                                    <FaMicrophone className="text-green-600" />
+                                  ) : (
+                                    <FaMicrophoneSlash className="text-red-600" />
+                                  )}
+                                </span>
+                              </div>
+                            </li>
+                          ))}
+                          {participants.length === 0 && (
+                            <li className="text-sm italic text-gray-500">No participants connected.</li>
+                          )}
+                        </ul>
+                      </div>
 
-        </div>
+                      {/* Chat Box */}
+                      <div className="flex flex-col border-t border-gray-300 dark:border-gray-700 pt-2">
+                        <h3 className="font-semibold mb-2">Chat</h3>
+                        <div
+                          ref={chatBoxRef}
+                          className="flex-1 overflow-y-auto mb-2 p-2 border rounded bg-gray-100 dark:bg-gray-800 max-h-48"
+                        >
+                          {chatMessages.map((msg, i) => (
+                            <div key={i} className="mb-1">
+                              <span className="font-semibold">{msg.from}:</span> {msg.content}
+                            </div>
+                          ))}
+                        </div>
+                        <div className="flex space-x-2">
+                          <input
+                            type="text"
+                            className="flex-grow px-3 py-2 rounded border border-gray-400 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+                            value={chatInput}
+                            onChange={(e) => setChatInput(e.target.value)}
+                            onKeyDown={(e) => e.key === 'Enter' && sendMessage()}
+                            placeholder="Type a message..."
+                          />
+                          <button
+                            onClick={sendMessage}
+                            className="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded transition"
+                          >
+                            Send
+                          </button>
+                        </div>
+                      </div>
 
-{/*          */}{/* Participant List */}
-{/*         <div className="p-4 bg-white dark:bg-gray-700 rounded shadow"> */}
-{/*           <h4 className="text-blue-600 font-semibold mb-2">👥 Participants</h4> */}
-{/*           <ul className="max-h-32 overflow-auto list-disc pl-5 text-sm text-gray-800 dark:text-gray-200"> */}
-{/*             {participants.map((participant, idx) => ( */}
-{/*               <li key={idx} className="hover:underline hover:text-blue-600"> */}
-{/*                 {participant.name} */}
-{/*               </li> */}
-{/*             ))} */}
-{/*           </ul> */}
-{/*         </div> */}
-        {/* Webcam */}
-        <div className="p-4 bg-white dark:bg-gray-700 rounded shadow text-center">
-          <Webcam ref={webcamRef1} audio={audioEnabled1} className="w-full h-40 bg-black rounded" />
-          <div className="mt-2 space-x-2 flex justify-center">
-            <button
-              onClick={() => setVideoEnabled1((v) => !v)}
-              className="p-2 text-white bg-blue-600 rounded-full hover:bg-blue-700"
-              title={videoEnabled1 ? "Stop Video" : "Start Video"}
-            >
-              {videoEnabled1 ? <FaVideo size={20} /> : <FaVideoSlash size={20} />}
-            </button>
-            <button
-              onClick={() => setAudioEnabled1((a) => !a)}
-              className="p-2 text-white bg-green-600 rounded-full hover:bg-green-700"
-              title={audioEnabled1 ? "Mute" : "Unmute"}
-            >
-              {audioEnabled1 ? <FaMicrophoneSlash size={20} /> : <FaMicrophone size={20} />}
-            </button>
-          </div>
-        </div>
+                      {/* File Upload */}
+                      <div className="mt-4">
+                        <label
+                          htmlFor="fileUpload"
+                          className="inline-block cursor-pointer px-3 py-2 bg-green-600 hover:bg-green-700 text-white rounded transition"
+                        >
+                          Upload File
+                        </label>
+                        <input
+                          id="fileUpload"
+                          type="file"
+                          onChange={handleFileUpload}
+                          className="hidden"
+                        />
+                        <div className="mt-2 max-h-32 overflow-y-auto">
+                          <h4 className="font-semibold">Uploaded Files</h4>
+                          <ul className="list-disc pl-5">
+                            {uploadedFiles.length === 0 && (
+                              <li className="text-sm italic text-gray-500">No files uploaded.</li>
+                            )}
+                            {uploadedFiles.map((file, i) => (
+                              <li key={i} className="truncate" title={file.filename}>
+                                {file.filename}
+                              </li>
+                            ))}
+                          </ul>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  );
+                  };
 
-        {/* Chat */}
-        <div className="p-4 bg-white dark:bg-gray-700 rounded shadow">
-          <h4 className="text-blue-600 font-semibold mb-2">💬 Chat</h4>
-          <div className="h-48 overflow-y-auto border p-2 mb-2 bg-gray-50 dark:bg-gray-800 text-sm rounded" ref={chatBoxRef}>
-            {chatMessages.map((msg, i) => (
-              <div
-                key={i}
-                className={`mb-1 ${msg.from === interviewerName ? 'text-right text-blue-500' : 'text-left text-gray-800 dark:text-gray-200'}`}
-              >
-                <div className="inline-block bg-blue-100 dark:bg-blue-900 px-2 py-1 rounded">
-                  <strong>{msg.from}</strong>: {msg.content}
-                </div>
-              </div>
-            ))}
-          </div>
-          <div className="flex">
-            <input
-              value={chatInput}
-              onChange={(e) => setChatInput(e.target.value)}
-              onKeyDown={(e) => e.key === 'Enter' && sendMessage()}
-              className="flex-grow px-3 py-2 rounded bg-gray-100 dark:bg-gray-600"
-              placeholder="Type your message..."
-            />
-            <button onClick={sendMessage} className="ml-2 px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700">Send</button>
-          </div>
-        </div>
+                  export default InterviewPanel;
 
-        {/* Files */}
-        <div className="p-4 bg-white dark:bg-gray-700 rounded shadow">
-          <h4 className="text-blue-600 font-semibold mb-2">📁 Files</h4>
-          <input
-            type="file"
-            onChange={handleFileUpload}
-            className="mb-2 w-full text-sm text-gray-800 dark:text-gray-200 file:mr-4 file:py-2 file:px-4
-              file:rounded-full file:border-0
-              file:text-sm file:font-semibold
-              file:bg-blue-600 file:text-white
-              hover:file:bg-blue-700"
-          />
-          <ul className="max-h-32 overflow-auto list-disc pl-5 text-sm text-gray-800 dark:text-gray-200">
-            {uploadedFiles.map((file, idx) => (
-              <li key={idx} className="hover:underline hover:text-blue-600">
-                <a
-                  href={`/api/files/download/${file.id}`}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                >
-                  {file.originalFileName}
-                </a>
-              </li>
-            ))}
-          </ul>
-        </div>
-         {/* End Session Button */}
-            <div className="p-4">
-              <button
-                onClick={endSession}
-                className="w-full py-3 text-lg bg-red-600 hover:bg-red-700 text-white rounded-lg"
-              >
-                End Session
-              </button>
-            </div>
-      </div>
-    </div>
-  );
-};
-
-export default InterviewPanel;

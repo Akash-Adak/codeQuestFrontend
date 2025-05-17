@@ -1,4 +1,4 @@
-const API_URL = "http://localhost:8080/auth";
+const API_URL = "https://codequestbackend-1.onrender.com/auth";
 
 export async function signup(username, password) {
   const response = await fetch(\`\${API_URL}/signup\`, {

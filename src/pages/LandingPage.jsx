@@ -1,89 +1,170 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useTheme } from "../context/ThemeContext";
 import Room from "../pages/Room";
 import { FaCode, FaChalkboardTeacher, FaUsers, FaChartLine } from "react-icons/fa";
+import { motion, useAnimation } from "framer-motion";
+import { useInView } from "react-intersection-observer";
+
+const features = [
+  {
+    icon: FaCode,
+    title: "Real-Time Coding Arena",
+    description: "Collaborate live in a multi-language environment with integrated code execution.",
+  },
+  {
+    icon: FaChalkboardTeacher,
+    title: "Mock Interview Simulator",
+    description: "Experience real interview pressure with timer, roles, and shared problems.",
+  },
+  {
+    icon: FaUsers,
+    title: "Live Collaboration",
+    description: "Chat, share problems, and code together with peers and mentors.",
+  },
+  {
+    icon: FaChartLine,
+    title: "Performance Insights",
+    description: "Track accuracy, speed, and improvements over time with detailed analytics.",
+  },
+];
+
+const fadeInUp = {
+  hidden: { opacity: 0, y: 30 },
+  visible: { opacity: 1, y: 0, transition: { duration: 0.6, ease: "easeOut" } },
+};
 
 const LandingPage = () => {
   const { darkMode } = useTheme();
   const [isRoomOpen, setIsRoomOpen] = useState(false);
+  const controls = useAnimation();
+  const [ref, inView] = useInView({ triggerOnce: true });
+
+  useEffect(() => {
+    if (inView) controls.start("visible");
+  }, [controls, inView]);
 
   const openRoomPopup = () => setIsRoomOpen(true);
   const closeRoomPopup = () => setIsRoomOpen(false);
 
   return (
-    <div className="min-h-screen font-sans">
-      <div className="min-h-screen bg-green-100 dark:bg-gray-900 text-gray-900 dark:text-white transition-colors duration-300">
-        <header className="text-center py-14 bg-gradient-to-r from-green-300 to-indigo-300 dark:from-blue-300 dark:to-purple-500 shadow-md">
-          <h1 className="text-5xl font-extrabold text-black mb-3">CodeQuest</h1>
-          <p className="text-lg text-white">Ace your coding interviews with collaboration and precision</p>
-          <button
-            onClick={openRoomPopup}
-            className="mt-6 px-6 py-3 bg-white text-blue-600 font-semibold rounded shadow hover:bg-gray-100"
-          >
-            🚀 Get Started
-          </button>
-        </header>
+    <div className={`min-h-screen ${darkMode ? "dark bg-gray-900 text-white" : "bg-white text-gray-900"}`}>
+      {/* Hero Section */}
+      <motion.section
+        className="flex flex-col items-center justify-center text-center px-4 relative overflow-hidden bg-gradient-to-br from-green-300 to-indigo-300 dark:from-green-300 dark:to-indigo-300 py-16 md:py-24" // Reduced padding
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ duration: 0.8 }}
+      >
+        <h1 className="text-4xl md:text-5xl font-extrabold mb-4 tracking-tight text-white drop-shadow-lg"> {/* Reduced font size on smaller screens */}
+          Code<span className="text-yellow-300">Quest</span>
+        </h1>
+        <p className="text-lg md:text-xl text-white mb-6 opacity-90 max-w-2xl"> {/* Reduced font size and margin */}
+          Collaborate, Conquer, Code: Your Path to Interview Success
+        </p>
+        <motion.button
+          onClick={openRoomPopup}
+          whileHover={{ scale: 1.05 }}
+          whileTap={{ scale: 0.95 }}
+          className="px-6 py-3 bg-white text-indigo-700 font-bold rounded-full shadow-lg hover:bg-indigo-100 transition duration-300"  // Reduced padding
+        >
+          🚀 Ignite Your Quest
+        </motion.button>
 
-        <section className="py-16 px-4 md:px-16 bg-green-100 dark:bg-gray-900">
-          <h2 className="text-3xl font-bold text-center mb-12 text-gray-800 dark:text-white">Our Key Features</h2>
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-            <div className="bg-white dark:bg-gray-800 p-6 rounded-xl shadow hover:shadow-xl transition">
-              <FaCode className="text-4xl mb-4 text-blue-600" />
-              <h3 className="text-xl font-bold mb-2">Real-Time Coding</h3>
-              <p className="text-gray-600 dark:text-gray-300">Code together in real time, test and debug with ease across supported languages.</p>
-            </div>
+        {/* Background Animation Bubbles */}
+        <motion.div
+          className="absolute w-32 h-32 bg-green-200 rounded-full top-1/4 left-1/4 blur-2xl opacity-40" // Adjusted positioning
+          animate={{ scale: [1, 1.2, 1], y: [0, -20, 0] }}
+          transition={{ repeat: Infinity, duration: 5 }}
+        />
+        <motion.div
+          className="absolute w-48 h-48 bg-indigo-200 rounded-full bottom-1/4 right-1/4 blur-3xl opacity-40" // Adjusted positioning
+          animate={{ rotate: [0, 360], scale: [1, 1.1, 1] }}
+          transition={{ repeat: Infinity, duration: 10 }}
+        />
+      </motion.section>
 
-            <div className="bg-white dark:bg-gray-800 p-6 rounded-xl shadow hover:shadow-xl transition">
-              <FaChalkboardTeacher className="text-4xl mb-4 text-green-600" />
-              <h3 className="text-xl font-bold mb-2">Mock Interviews</h3>
-              <p className="text-gray-600 dark:text-gray-300">Simulate interviews with timers, role assignments and question libraries.</p>
-            </div>
+      {/* Features Section */}
+      <motion.section
+        ref={ref}
+        className="py-20 px-6 sm:px-10 lg:px-24 bg-green-50 dark:bg-gray-800"
+        variants={fadeInUp}
+        initial="hidden"
+        animate={controls}
+      >
+        <motion.h2
+          className="text-4xl font-bold text-center mb-12"
+          variants={fadeInUp}
+          transition={{ delay: 0.1 }}
+        >
+          Unleash Your Potential with <span className="text-indigo-600">Key Features</span>
+        </motion.h2>
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
+          {features.map((feature, idx) => (
+            <motion.div
+              key={idx}
+              className={`bg-white dark:bg-gray-700 p-8 rounded-xl shadow-md hover:shadow-xl transition-all duration-300`}
+              variants={fadeInUp}
+              initial="hidden"
+              animate={controls}
+              transition={{ delay: 0.2 + idx * 0.2 }}
+            >
+              <feature.icon className="text-5xl text-indigo-500 mb-4" />
+              <h3 className="text-xl font-semibold mb-2">{feature.title}</h3>
+              <p className="text-gray-600 dark:text-gray-300">{feature.description}</p>
+            </motion.div>
+          ))}
+        </div>
+      </motion.section>
 
-            <div className="bg-white dark:bg-gray-800 p-6 rounded-xl shadow hover:shadow-xl transition">
-              <FaUsers className="text-4xl mb-4 text-yellow-500" />
-              <h3 className="text-xl font-bold mb-2">Collaboration Tools</h3>
-              <p className="text-gray-600 dark:text-gray-300">Chat, share problems, and collaborate live with peer candidates and mentors.</p>
-            </div>
+      {/* CTA Section */}
+      <motion.section
+        className="py-20 px-6 text-center bg-indigo-50 dark:bg-gray-900"
+        variants={fadeInUp}
+        initial="hidden"
+        animate={controls}
+      >
+        <motion.h2
+          className="text-4xl font-bold mb-6"
+          variants={fadeInUp}
+          transition={{ delay: 0.3 }}
+        >
+          Ready to Elevate Your Interview Journey?
+        </motion.h2>
+        <motion.p
+          className="text-lg max-w-3xl mx-auto mb-8 text-gray-700 dark:text-gray-300"
+          variants={fadeInUp}
+          transition={{ delay: 0.4 }}
+        >
+          CodeQuest empowers you with live collaboration, mock interviews, analytics, and a vast problem library—everything you need to crack top tech interviews with confidence.
+        </motion.p>
+        <motion.button
+          onClick={openRoomPopup}
+          whileHover={{ scale: 1.05 }}
+          whileTap={{ scale: 0.95 }}
+          className="px-10 py-4 bg-indigo-700 text-white font-bold rounded-full shadow-xl hover:bg-indigo-800 transition duration-300"
+        >
+          🔥 Start Your CodeQuest
+        </motion.button>
+      </motion.section>
 
-            <div className="bg-white dark:bg-gray-800 p-6 rounded-xl shadow hover:shadow-xl transition">
-              <FaChartLine className="text-4xl mb-4 text-red-500" />
-              <h3 className="text-xl font-bold mb-2">Progress Tracking</h3>
-              <p className="text-gray-600 dark:text-gray-300">Monitor your journey, track problem-solving skills, and receive feedback instantly.</p>
-            </div>
-          </div>
-        </section>
-
-        <section className="bg-green-50 dark:bg-gray-800 py-16 px-4 md:px-16 text-center">
-          <h2 className="text-3xl font-bold text-gray-800 dark:text-white mb-6">Why Choose CodeQuest?</h2>
-          <p className="text-gray-700 dark:text-gray-300 max-w-3xl mx-auto mb-8">
-            CodeQuest combines cutting-edge coding collaboration with interview preparation tools tailored for aspiring developers, students, and job seekers. Whether you're preparing for FAANG, startups, or academics, CodeQuest is your all-in-one platform.
-          </p>
-          <button
-            onClick={openRoomPopup}
-            className="px-6 py-3 bg-indigo-600 text-white font-semibold rounded shadow-lg hover:bg-indigo-700"
-          >
-            🔥 Start a New Session
-          </button>
-        </section>
-
-        <footer className="text-center py-6 bg-gray-200 dark:bg-gray-900">
-          <p className="text-sm text-gray-600 dark:text-gray-400">
-            © 2025 CodeQuest. Built with ❤️ for developers.
-          </p>
-        </footer>
-      </div>
-
+      {/* Modal Room Component */}
       {isRoomOpen && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
-          <div className="relative bg-white dark:bg-gray-800 p-6 rounded-lg w-full max-w-lg shadow-xl">
+        <div className="fixed inset-0 z-50 bg-black bg-opacity-60 flex items-center justify-center p-4">
+          <motion.div
+            initial={{ scale: 0.8, opacity: 0 }}
+            animate={{ scale: 1, opacity: 1 }}
+            exit={{ scale: 0.8, opacity: 0 }}
+            transition={{ duration: 0.3 }}
+            className="relative bg-white dark:bg-gray-800 p-6 rounded-xl shadow-2xl max-w-xl w-full"
+          >
             <button
               onClick={closeRoomPopup}
-              className="absolute top-3 right-4 text-2xl text-gray-700 dark:text-gray-300 hover:text-red-500"
+              className="absolute top-4 right-5 text-2xl text-gray-700 dark:text-gray-300 hover:text-red-500"
             >
               ×
             </button>
             <Room />
-          </div>
+          </motion.div>
         </div>
       )}
     </div>

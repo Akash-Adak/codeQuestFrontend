@@ -1,5 +1,6 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Link, useNavigate, useLocation } from "react-router-dom";
+import toast from "react-hot-toast";
 
 const Login = ({ onLoginSuccess }) => {
   const [email, setEmail] = useState("");
@@ -9,8 +10,16 @@ const Login = ({ onLoginSuccess }) => {
 
   const navigate = useNavigate();
   const location = useLocation();
-
   const from = location.state?.from?.pathname || "/dashboard";
+
+  // ✅ Show success message if redirected after forgot password
+  useEffect(() => {
+    const searchParams = new URLSearchParams(location.search);
+    const reset = searchParams.get("reset");
+    if (reset === "success") {
+      toast.success("Password reset successful! Please log in.");
+    }
+  }, [location.search]);
 
   const handleLogin = (e) => {
     e.preventDefault();
@@ -26,7 +35,6 @@ const Login = ({ onLoginSuccess }) => {
         setLoading(false);
         if (res.ok) {
           const data = await res.json();
-
           localStorage.setItem("token", data.token);
           localStorage.setItem("name", email);
 
@@ -34,7 +42,6 @@ const Login = ({ onLoginSuccess }) => {
             onLoginSuccess(data.token);
           }
 
-          // ✅ Proper redirection after login
           navigate(from, { replace: true });
         } else {
           const text = await res.text();
@@ -87,6 +94,15 @@ const Login = ({ onLoginSuccess }) => {
           </button>
         </form>
 
+        <div className="flex justify-end mt-2">
+          <Link
+            to="/forgotpassword"
+            className="text-sm text-indigo-600 hover:underline dark:text-indigo-400"
+          >
+            Forgot Password?
+          </Link>
+        </div>
+
         <div className="flex items-center justify-center my-4">
           <div className="text-gray-500 dark:text-gray-400">OR</div>
         </div>
@@ -105,7 +121,10 @@ const Login = ({ onLoginSuccess }) => {
 
         <div className="text-center text-sm text-gray-500 mt-4 dark:text-gray-400">
           Don't have an account?{" "}
-          <Link to="/signup" className="text-indigo-600 hover:text-indigo-700 dark:text-indigo-400 dark:hover:text-indigo-500">
+          <Link
+            to="/signup"
+            className="text-indigo-600 hover:text-indigo-700 dark:text-indigo-400 dark:hover:text-indigo-500"
+          >
             Sign up
           </Link>
         </div>
