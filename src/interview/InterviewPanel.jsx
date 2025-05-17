@@ -5,10 +5,10 @@ import { over } from 'stompjs';
 import { FaVideo, FaVideoSlash, FaMicrophone, FaMicrophoneSlash } from "react-icons/fa";
 import CodeEditor from '../components/CodeEditor';
 import WhiteBoard from '../interview/WhiteBoard';
-import { useLocation ,useNavigate} from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 
 const InterviewPanel = () => {
-  const navigate=useNavigate();
+  const navigate = useNavigate();
   const [showWhiteBoard, setShowWhiteBoard] = useState(false);
   const [code, setCode] = useState('// Start coding here...');
   const [seconds, setSeconds] = useState(0);
@@ -21,7 +21,6 @@ const InterviewPanel = () => {
   const [sessionId, setSessionId] = useState('');
   const [interviewerName, setInterviewerName] = useState('');
 
-  // Participant list and self status
   const [participants, setParticipants] = useState([]);
   const [videoEnabled1, setVideoEnabled1] = useState(true);
   const [audioEnabled1, setAudioEnabled1] = useState(true);
@@ -92,11 +91,10 @@ const InterviewPanel = () => {
     const socket = new SockJS('/ws');
     stompClient.current = over(socket);
     stompClient.current.connect({}, () => {
-      // Subscribe to chat messages
+      // Subscribe to chat messages and participant updates
       stompClient.current.subscribe(`/topic/${sessionId}`, (message) => {
         if (message.body) {
           const msg = JSON.parse(message.body);
-          // Check if message is chat or participant update
           if (msg.type === 'chat') {
             setChatMessages((prev) => [...prev, msg.data]);
           } else if (msg.type === 'participant') {
@@ -113,9 +111,7 @@ const InterviewPanel = () => {
 
   const disconnectWebSocket = () => {
     if (stompClient.current?.connected) {
-      // Notify server of participant leaving
       sendParticipantLeave();
-
       stompClient.current.disconnect(() => {
         console.log('Disconnected WebSocket');
       });
@@ -137,7 +133,7 @@ const InterviewPanel = () => {
     }
   };
 
-  // Notify server participant joined
+  // Participant notifications
   const sendParticipantJoin = () => {
     if (stompClient.current?.connected && sessionId) {
       const participant = {
@@ -154,7 +150,6 @@ const InterviewPanel = () => {
         }
       };
       stompClient.current.send(`/topic/${sessionId}`, {}, JSON.stringify(message));
-      // Also add self locally
       setParticipants((prev) => {
         if (!prev.find(p => p.name === participant.name)) {
           return [...prev, participant];
@@ -164,7 +159,6 @@ const InterviewPanel = () => {
     }
   };
 
-  // Notify server participant left
   const sendParticipantLeave = () => {
     if (stompClient.current?.connected && sessionId) {
       const message = {
@@ -178,7 +172,6 @@ const InterviewPanel = () => {
     }
   };
 
-  // Notify server participant updated video/audio status
   const sendParticipantStatus = () => {
     if (stompClient.current?.connected && sessionId) {
       const participant = {
@@ -198,27 +191,24 @@ const InterviewPanel = () => {
     }
   };
 
-  // Handle participant join/leave/update from server messages
+  // Handle participant updates from server
   const handleParticipantUpdate = (data) => {
     const { action, participant, name } = data;
     setParticipants((prev) => {
       if (action === 'join' && participant) {
-        // Add participant if not exists
         if (!prev.find(p => p.name === participant.name)) {
           return [...prev, participant];
         }
       } else if (action === 'leave' && name) {
-        // Remove participant by name
         return prev.filter(p => p.name !== name);
       } else if (action === 'update' && participant) {
-        // Update participant video/audio
         return prev.map(p => p.name === participant.name ? { ...p, video: participant.video, audio: participant.audio } : p);
       }
       return prev;
     });
   };
 
-  // Update self participant info in list locally when toggling video/audio
+  // Update self participant locally
   const updateSelfStatus = () => {
     setParticipants((prev) => {
       return prev.map(p => {
@@ -230,7 +220,7 @@ const InterviewPanel = () => {
     });
   };
 
-  // File upload and fetch functions
+  // File upload handler
   const handleFileUpload = async (e) => {
     const file = e.target.files[0];
     if (!file) return;
@@ -249,6 +239,7 @@ const InterviewPanel = () => {
     }
   };
 
+  // Fetch uploaded files list
   const fetchUploadedFiles = async () => {
     try {
       const res = await fetch(`/api/files/list?sessionId=${sessionId}`);
@@ -258,18 +249,18 @@ const InterviewPanel = () => {
     }
   };
 
+  // Format timer display (mm:ss)
   const formatTime = (s) => {
     const m = Math.floor(s / 60);
     const sec = s % 60;
     return `${m.toString().padStart(2, '0')}:${sec.toString().padStart(2, '0')}`;
   };
 
+  // End session and navigate away
   const endSession = () => {
     if (window.confirm("Are you sure you want to end the session?")) {
-      // Handle session end logic (e.g., notifying participants, stopping WebSocket, etc.)
       disconnectWebSocket();
       navigate("/InterviewTypes");
-      // Optionally, redirect to a different page
     }
   };
 
@@ -277,202 +268,163 @@ const InterviewPanel = () => {
     <div className="flex flex-col lg:flex-row h-screen bg-white dark:bg-gray-900 text-gray-800 dark:text-white transition-colors">
       {/* Left Panel */}
       <div className="w-full lg:w-2/3 p-4 flex flex-col">
-        <div className="flex justify-between items-center mb-3">
-          <h2 className="text-xl font-semibold">
-            {showWhiteBoard ? '📝 WhiteBoard' : '💻 Code Editor'}
-          </h2>
-          <button
-            onClick={() => setShowWhiteBoard(!showWhiteBoard)}
-            class Name="px-3 py-1 rounded bg-indigo-600 text-white hover:bg-indigo-700 transition"
-                  >
-                  {showWhiteBoard ? 'Show Editor' : 'Show WhiteBoard'}
-                  </button>
-                  </div>
-                      <div className="flex-1 border rounded shadow-md overflow-hidden bg-gray-50 dark:bg-gray-800">
-                        {showWhiteBoard ? (
-                          <WhiteBoard />
-                        ) : (
-                          <CodeEditor code={code} onChange={setCode} />
-                        )}
-                      </div>
+        <div className="flex justify-between items-center mb-2">
+                                                             <h2 className="text-xl font-semibold">Timer: {formatTime(seconds)}</h2>
+                                                             <button
+                                                             onClick={() => setIsRunning(!isRunning)}
+                                                             className="px-3 py-1 rounded bg-indigo-600 text-white hover:bg-indigo-700 transition"
+                                                             >
+                                                             {isRunning ? 'Pause' : 'Start'}
+                                                             </button>
+                                                             <button
+                                                             onClick={() => setSeconds(0)}
+                                                             className="px-3 py-1 rounded bg-red-600 text-white hover:bg-red-700 transition"
+                                                             >
+                                                             Reset
+                                                             </button>
+                                                             </div>
+                                                                 <div className="flex-grow flex flex-col space-y-3">
+                                                                   {/* Code Editor */}
+                                                                   <CodeEditor
+                                                                     value={code}
+                                                                     onChange={setCode}
+                                                                     className="flex-grow border rounded shadow-md"
+                                                                   />
 
-                      {/* Timer and Controls */}
-                      <div className="flex justify-between items-center mt-3 space-x-3">
-                        <div className="text-lg font-mono tracking-widest">
-                          Timer: <span className="font-bold">{formatTime(seconds)}</span>
-                        </div>
-                        <div className="space-x-2">
-                          {!isRunning ? (
-                            <button
-                              onClick={() => setIsRunning(true)}
-                              className="px-3 py-1 rounded bg-green-600 hover:bg-green-700 text-white transition"
-                            >
-                              Start
-                            </button>
-                          ) : (
-                            <button
-                              onClick={() => setIsRunning(false)}
-                              className="px-3 py-1 rounded bg-yellow-500 hover:bg-yellow-600 text-white transition"
-                            >
-                              Pause
-                            </button>
-                          )}
-                          <button
-                            onClick={() => setSeconds(0)}
-                            className="px-3 py-1 rounded bg-red-600 hover:bg-red-700 text-white transition"
-                          >
-                            Reset
-                          </button>
-                          <button
-                            onClick={endSession}
-                            className="px-3 py-1 rounded bg-gray-600 hover:bg-gray-700 text-white transition"
-                            title="End Session"
-                          >
-                            End Session
-                          </button>
-                        </div>
-                      </div>
-                    </div>
+                                                                   {/* Whiteboard Toggle */}
+                                                                   <button
+                                                                     onClick={() => setShowWhiteBoard(!showWhiteBoard)}
+                                                                     className="mt-2 px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700 transition self-start"
+                                                                   >
+                                                                     {showWhiteBoard ? 'Hide Whiteboard' : 'Show Whiteboard'}
+                                                                   </button>
 
-                    {/* Right Panel */}
-                    <div className="w-full lg:w-1/3 p-4 flex flex-col border-l border-gray-300 dark:border-gray-700">
-                      {/* Webcam & Controls */}
-                      <div className="mb-4">
-                        <h3 className="text-lg font-semibold mb-2">Your Webcam</h3>
-                        <div className="relative w-full aspect-video bg-black rounded overflow-hidden mb-2">
-                          <Webcam
-                            audio={true}
-                            mirrored={true}
-                            ref={webcamRef1}
-                            videoConstraints={{ facingMode: "user" }}
-                            className="w-full h-full object-cover"
-                          />
-                        </div>
-                        <div className="flex justify-center space-x-6">
-                          <button
-                            onClick={() => setVideoEnabled1((v) => !v)}
-                            className={`p-2 rounded-full border-2 ${
-                              videoEnabled1
-                                ? 'border-green-500 text-green-600 hover:bg-green-100'
-                                : 'border-red-500 text-red-600 hover:bg-red-100'
-                            } transition`}
-                            title={videoEnabled1 ? "Turn off Video" : "Turn on Video"}
-                          >
-                            {videoEnabled1 ? <FaVideo size={20} /> : <FaVideoSlash size={20} />}
-                          </button>
-                          <button
-                            onClick={() => setAudioEnabled1((a) => !a)}
-                            className={`p-2 rounded-full border-2 ${
-                              audioEnabled1
-                                ? 'border-green-500 text-green-600 hover:bg-green-100'
-                                : 'border-red-500 text-red-600 hover:bg-red-100'
-                            } transition`}
-                            title={audioEnabled1 ? "Mute Microphone" : "Unmute Microphone"}
-                          >
-                            {audioEnabled1 ? <FaMicrophone size={20} /> : <FaMicrophoneSlash size={20} />}
-                          </button>
-                        </div>
-                      </div>
+                                                                   {/* Whiteboard */}
+                                                                   {showWhiteBoard && (
+                                                                     <div className="flex-grow border rounded shadow-md mt-2">
+                                                                       <WhiteBoard />
+                                                                     </div>
+                                                                   )}
+                                                                 </div>
+                                                               </div>
 
-                      {/* Participant List */}
-                      <div className="mb-4 flex-1 overflow-y-auto">
-                        <h3 className="text-lg font-semibold mb-2">Participants ({participants.length})</h3>
-                        <ul className="space-y-2">
-                          {participants.map((p) => (
-                            <li
-                              key={p.name}
-                              className={`flex items-center justify-between p-2 rounded border ${
-                                p.self ? 'border-indigo-500 bg-indigo-100 dark:bg-indigo-900' : 'border-gray-300 dark:border-gray-700'
-                              }`}
-                            >
-                              <span className="font-medium truncate">{p.name}</span>
-                              <div className="flex items-center space-x-3">
-                                <span title={p.video ? "Video On" : "Video Off"}>
-                                  {p.video ? (
-                                    <FaVideo className="text-green-600" />
-                                  ) : (
-                                    <FaVideoSlash className="text-red-600" />
-                                  )}
-                                </span>
-                                <span title={p.audio ? "Audio On" : "Audio Off"}>
-                                  {p.audio ? (
-                                    <FaMicrophone className="text-green-600" />
-                                  ) : (
-                                    <FaMicrophoneSlash className="text-red-600" />
-                                  )}
-                                </span>
-                              </div>
-                            </li>
-                          ))}
-                          {participants.length === 0 && (
-                            <li className="text-sm italic text-gray-500">No participants connected.</li>
-                          )}
-                        </ul>
-                      </div>
+                                                               {/* Right Panel */}
+                                                               <div className="w-full lg:w-1/3 border-l border-gray-300 dark:border-gray-700 p-4 flex flex-col space-y-4">
+                                                                 {/* Webcam with controls */}
+                                                                 <div className="relative">
+                                                                   <Webcam
+                                                                     ref={webcamRef1}
+                                                                     audio={audioEnabled1}
+                                                                     videoConstraints={{ width: 320, height: 240, facingMode: "user" }}
+                                                                     className="rounded-md border border-gray-400"
+                                                                   />
+                                                                   <div className="absolute top-2 right-2 flex space-x-2">
+                                                                     <button
+                                                                       title={videoEnabled1 ? "Turn Off Video" : "Turn On Video"}
+                                                                       onClick={() => setVideoEnabled1(!videoEnabled1)}
+                                                                       className="p-1 rounded bg-black bg-opacity-50 hover:bg-opacity-75"
+                                                                     >
+                                                                       {videoEnabled1 ? <FaVideo className="text-white" /> : <FaVideoSlash className="text-red-500" />}
+                                                                     </button>
+                                                                     <button
+                                                                       title={audioEnabled1 ? "Mute" : "Unmute"}
+                                                                       onClick={() => setAudioEnabled1(!audioEnabled1)}
+                                                                       className="p-1 rounded bg-black bg-opacity-50 hover:bg-opacity-75"
+                                                                     >
+                                                                       {audioEnabled1 ? <FaMicrophone className="text-white" /> : <FaMicrophoneSlash className="text-red-500" />}
+                                                                     </button>
+                                                                   </div>
+                                                                 </div>
 
-                      {/* Chat Box */}
-                      <div className="flex flex-col border-t border-gray-300 dark:border-gray-700 pt-2">
-                        <h3 className="font-semibold mb-2">Chat</h3>
-                        <div
-                          ref={chatBoxRef}
-                          className="flex-1 overflow-y-auto mb-2 p-2 border rounded bg-gray-100 dark:bg-gray-800 max-h-48"
-                        >
-                          {chatMessages.map((msg, i) => (
-                            <div key={i} className="mb-1">
-                              <span className="font-semibold">{msg.from}:</span> {msg.content}
-                            </div>
-                          ))}
-                        </div>
-                        <div className="flex space-x-2">
-                          <input
-                            type="text"
-                            className="flex-grow px-3 py-2 rounded border border-gray-400 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
-                            value={chatInput}
-                            onChange={(e) => setChatInput(e.target.value)}
-                            onKeyDown={(e) => e.key === 'Enter' && sendMessage()}
-                            placeholder="Type a message..."
-                          />
-                          <button
-                            onClick={sendMessage}
-                            className="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded transition"
-                          >
-                            Send
-                          </button>
-                        </div>
-                      </div>
+                                                                 {/* Participants */}
+                                                                 <div className="flex flex-col space-y-1 border rounded p-2 max-h-40 overflow-auto bg-gray-50 dark:bg-gray-800">
+                                                                   <h3 className="font-semibold mb-1">Participants ({participants.length})</h3>
+                                                                   {participants.map((p) => (
+                                                                     <div key={p.name} className="flex items-center justify-between">
+                                                                       <span className="font-medium">{p.name}{p.self ? " (You)" : ""}</span>
+                                                                       <div className="flex space-x-2">
+                                                                         {p.video ? (
+                                                                           <FaVideo className="text-green-500" title="Video On" />
+                                                                         ) : (
+                                                                           <FaVideoSlash className="text-red-500" title="Video Off" />
+                                                                         )}
+                                                                         {p.audio ? (
+                                                                           <FaMicrophone className="text-green-500" title="Audio On" />
+                                                                         ) : (
+                                                                           <FaMicrophoneSlash className="text-red-500" title="Audio Off" />
+                                                                         )}
+                                                                       </div>
+                                                                     </div>
+                                                                   ))}
+                                                                 </div>
 
-                      {/* File Upload */}
-                      <div className="mt-4">
-                        <label
-                          htmlFor="fileUpload"
-                          className="inline-block cursor-pointer px-3 py-2 bg-green-600 hover:bg-green-700 text-white rounded transition"
-                        >
-                          Upload File
-                        </label>
-                        <input
-                          id="fileUpload"
-                          type="file"
-                          onChange={handleFileUpload}
-                          className="hidden"
-                        />
-                        <div className="mt-2 max-h-32 overflow-y-auto">
-                          <h4 className="font-semibold">Uploaded Files</h4>
-                          <ul className="list-disc pl-5">
-                            {uploadedFiles.length === 0 && (
-                              <li className="text-sm italic text-gray-500">No files uploaded.</li>
-                            )}
-                            {uploadedFiles.map((file, i) => (
-                              <li key={i} className="truncate" title={file.filename}>
-                                {file.filename}
-                              </li>
-                            ))}
-                          </ul>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                  );
-                  };
+                                                                 {/* Chat Box */}
+                                                                 <div className="flex flex-col flex-grow border rounded p-2 bg-gray-50 dark:bg-gray-800">
+                                                                   <h3 className="font-semibold mb-2">Chat</h3>
+                                                                   <div
+                                                                     ref={chatBoxRef}
+                                                                     className="flex-grow overflow-y-auto mb-2 p-2 bg-white dark:bg-gray-900 rounded shadow-inner"
+                                                                     style={{ maxHeight: '200px' }}
+                                                                   >
+                                                                     {chatMessages.length === 0 && <p className="text-gray-500">No messages yet</p>}
+                                                                     {chatMessages.map((msg, idx) => (
+                                                                       <div
+                                                                         key={idx}
+                                                                         className={`mb-1 p-1 rounded ${
+                                                                           msg.from === (interviewerName || 'User') ? 'bg-indigo-100 dark:bg-indigo-700 self-end text-right' : 'bg-gray-200 dark:bg-gray-700'
+                                                                         }`}
+                                                                       >
+                                                                         <strong>{msg.from}: </strong><span>{msg.content}</span>
+                                                                       </div>
+                                                                     ))}
+                                                                   </div>
+                                                                   <div className="flex space-x-2">
+                                                                     <input
+                                                                       type="text"
+                                                                       value={chatInput}
+                                                                       onChange={(e) => setChatInput(e.target.value)}
+                                                                       onKeyDown={(e) => e.key === 'Enter' && sendMessage()}
+                                                                       placeholder="Type a message..."
+                                                                       className="flex-grow border rounded px-2 py-1 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                                                                     />
+                                                                     <button
+                                                                       onClick={sendMessage}
+                                                                       className="px-4 py-1 bg-indigo-600 text-white rounded hover:bg-indigo-700 transition"
+                                                                     >
+                                                                       Send
+                                                                     </button>
+                                                                   </div>
+                                                                 </div>
 
-                  export default InterviewPanel;
+                                                                 {/* File Upload */}
+                                                                 <div className="border rounded p-2 bg-gray-50 dark:bg-gray-800">
+                                                                   <h3 className="font-semibold mb-2">Upload Files</h3>
+                                                                   <input
+                                                                     type="file"
+                                                                     onChange={handleFileUpload}
+                                                                     className="mb-2"
+                                                                   />
+                                                                   <div className="max-h-24 overflow-auto">
+                                                                     {uploadedFiles.length === 0 && <p className="text-gray-500">No files uploaded.</p>}
+                                                                     {uploadedFiles.map((file, idx) => (
+                                                                       <div key={idx} className="text-sm truncate">
+                                                                         {file.name}
+                                                                       </div>
+                                                                     ))}
+                                                                   </div>
+                                                                 </div>
 
+                                                                 {/* End Session Button */}
+                                                                 <button
+                                                                   onClick={endSession}
+                                                                   className="mt-2 px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700 transition"
+                                                                 >
+                                                                   End Session
+                                                                 </button>
+                                                               </div>
+                                                             </div>
+
+);
+};
+
+export default InterviewPanel;
