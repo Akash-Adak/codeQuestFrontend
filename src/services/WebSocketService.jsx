@@ -17,7 +17,7 @@ const WebSocketService = {
     this.participant = participant;
     this.onMessage = onMessage;
 
-    const socket = new SockJS('http://localhost:8080/ws');
+    const socket = new SockJS('https://codequestbackend-1.onrender.com/ws');
     this.stompClient = new Client({
       webSocketFactory: () => socket,
       reconnectDelay: 5000,
