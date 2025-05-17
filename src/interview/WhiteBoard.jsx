@@ -40,7 +40,7 @@ const WhiteBoard = () => {
     clearCanvas();
 
     const client = new Client({
-      webSocketFactory: () => new SockJS("http://localhost:8080/whiteboard"),
+      webSocketFactory: () => new SockJS("https://codequestbackend-1.onrender.com/whiteboard"),
       onConnect: () => {
         client.subscribe("/topic/drawing", (message) => {
             console.log("whiteboard connection succesfully");

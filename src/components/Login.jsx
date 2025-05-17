@@ -48,7 +48,7 @@ const Login = ({ onLoginSuccess }) => {
   };
 
   const handleGoogleLogin = () => {
-    window.location.href = "http://localhost:https://codequestbackend-1.onrender.com/auth/google/callback";
+    window.location.href = "https://codequestbackend-1.onrender.com/auth/google/callback";
   };
 
   return (
