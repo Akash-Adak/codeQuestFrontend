@@ -87,7 +87,7 @@ const RoomPage = () => {
   };
 
   const handleRunCode = async () => {
-    const response = await fetch("https://acceptable-determination-production.up.railway.app/execute", {
+    const response = await fetch("https://codequestbackend.onrender.com/execute", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ code, language }),
