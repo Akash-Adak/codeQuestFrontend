@@ -135,7 +135,7 @@ const CodeEditor = ({ roomId, participant }) => {
 
   const handleRunCode = async () => {
     try {
-      const response = await axios.post("http://localhost:8080/api/code/run", {
+      const response = await axios.post("https://acceptable-determination-production.up.railway.app/api/code/run", {
         code,
         languageId,
         input,
