@@ -139,13 +139,13 @@ function Navbar({ token, onLogout }) {
                     to="/dashboard"
                     className="flex items-center px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-700"
                   >
-                    <FaUser className="mr-2" /> View Profile
+                    <FaUser className="mr-2" />DashBoard
                   </Link>
                   <Link
                     to="/profile"
                     className="flex items-center px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-700"
                   >
-                    <FaCog className="mr-2" /> Settings
+                    <FaCog className="mr-2" /> ViewProfile
                   </Link>
                   <button
                     onClick={handleLogout}
