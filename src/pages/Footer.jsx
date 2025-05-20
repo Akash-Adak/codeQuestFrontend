@@ -64,7 +64,7 @@ function Footer() {
             </h3>
             <div className="flex gap-3 text-lg mb-1">
               <a
-                href="https://github.com/your-repo"
+                href="https://github.com/Akash-Adak/CodeQuestFrontend"
                 target="_blank"
                 rel="noopener noreferrer"
                 className={`${hoverColor}`}
@@ -72,14 +72,14 @@ function Footer() {
                 <FaGithub />
               </a>
               <a
-                href="https://linkedin.com/in/your-profile"
+                href="#"
                 target="_blank"
                 rel="noopener noreferrer"
                 className={`${hoverColor}`}
               >
                 <FaLinkedin />
               </a>
-              <a href="mailto:support@codequest.com" className={`${hoverColor}`}>
+              <a href="codequest.coding@gmail.com" className={`${hoverColor}`}>
                 <FaEnvelope />
               </a>
             </div>
