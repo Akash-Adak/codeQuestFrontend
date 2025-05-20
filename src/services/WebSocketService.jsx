@@ -19,7 +19,7 @@ const WebSocketService = {
 
 
 
-    const socket = new SockJS('https://acceptable-determination-production.up.railway.app/ws');
+    const socket = new SockJS('https://codequestbackend.onrender.com/ws');
     this.stompClient = new Client({
       webSocketFactory: () => socket,
       reconnectDelay: 5000,
