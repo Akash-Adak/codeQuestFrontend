@@ -14,7 +14,7 @@ const PeerMatchPage = () => {
   const handleCreateSession = async () => {
     if (!name) return alert('Please enter your name');
     try {
-      const response = await axios.post('http://localhost:8080/api/interview-rooms/create');
+      const response = await axios.post('https://acceptable-determination-production.up.railway.app/api/interview-rooms/create');
       const room = response.data;
 
       setSessionId(room.roomCode);
@@ -37,7 +37,7 @@ const PeerMatchPage = () => {
       return;
     }
     try {
-      await axios.post('http://localhost:8080/api/interview-rooms/join', null, {
+      await axios.post('https://acceptable-determination-production.up.railway.app/api/interview-rooms/join', null, {
         params: {
           roomCode: sessionId,
           accessCode: accessCodeInput,
