@@ -40,7 +40,7 @@ const WhiteBoard = () => {
     clearCanvas();
 
     const client = new Client({
-      webSocketFactory: () => new SockJS("http://localhost:8080/whiteboard"),
+      webSocketFactory: () => new SockJS("https://acceptable-determination-production.up.railway.app/whiteboard"),
       onConnect: () => {
         client.subscribe("/topic/drawing", (message) => {
             console.log("whiteboard connection succesfully");
