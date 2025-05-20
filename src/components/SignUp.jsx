@@ -120,7 +120,7 @@ const SignUp = ({ onSignUpSuccess }) => {
               </button>
             </form>
 
-            <div className="flex items-center justify-center my-4">
+{/*             <div className="flex items-center justify-center my-4">
               <div className="text-gray-500 dark:text-gray-400">OR</div>
             </div>
 
@@ -134,9 +134,9 @@ const SignUp = ({ onSignUpSuccess }) => {
                 className="w-5 h-5 mr-2"
               />
               Continue with Google
-            </button>
+            </button> */}
 
-{/*             <div className="text-center text-sm text-gray-500 mt-4 dark:text-gray-400">
+            <div className="text-center text-sm text-gray-500 mt-4 dark:text-gray-400">
               Already have an account?{" "}
               <Link
                 to="/login"
@@ -144,7 +144,7 @@ const SignUp = ({ onSignUpSuccess }) => {
               >
                 Login
               </Link>
-            </div> */}
+            </div>
           </>
         )}
 
