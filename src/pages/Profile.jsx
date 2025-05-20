@@ -42,7 +42,11 @@ export default function Profile() {
       setPreviewPhoto(parsed.profilePhotoBase64 || "");
     } else {
       axios
-        .get(`http://localhost:8080/api/profile?email=${userEmail}`)
+        .get(`http://localhost:8080/api/profile?email=${userEmail}`,{
+            headers: {
+                  Authorization: `Bearer ${localStorage.getItem('token')}`, // Assuming you store it as 'token'
+                },
+            })
         .then((res) => {
           if (res.data) {
             setProfile(res.data);
@@ -74,7 +78,11 @@ export default function Profile() {
   const toggleEdit = () => {
     if (editing) {
       axios
-        .post("http://localhost:8080/api/profile", profile)
+        .post("http://localhost:8080/api/profile", profile,{
+             headers: {
+                  Authorization: `Bearer ${localStorage.getItem('token')}`, // Assuming you store it as 'token'
+                },
+            })
         .then((res) => {
           setProfile(res.data);
           setPreviewPhoto(res.data.profilePhotoBase64 || "");
