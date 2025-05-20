@@ -18,7 +18,7 @@ const SignUp = ({ onSignUpSuccess }) => {
     setError("");
     setLoading(true);
     try {
-      const res = await fetch("https://codequestbackend-production.up.railway.app/public/signup", {
+      const res = await fetch("https://codequestbackend.onrender.com/public/signup", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ username, password, email }),
@@ -46,7 +46,7 @@ const SignUp = ({ onSignUpSuccess }) => {
     setError("");
     setLoading(true);
     try {
-      const res = await fetch("https://codequestbackend-production.up.railway.app/public/verify", {
+      const res = await fetch("https://codequestbackend.onrender.com/public/verify", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email, code }),
