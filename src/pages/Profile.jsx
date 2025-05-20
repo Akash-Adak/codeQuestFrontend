@@ -42,7 +42,7 @@ export default function Profile() {
       setPreviewPhoto(parsed.profilePhotoBase64 || "");
     } else {
       axios
-        .get(`https://acceptable-determination-production.up.railway.app/api/profile?email=${userEmail}`,{
+        .get(`https://codequestbackend.onrender.com/api/profile?email=${userEmail}`,{
             headers: {
                   Authorization: `Bearer ${localStorage.getItem('token')}`, // Assuming you store it as 'token'
                 },
@@ -78,7 +78,7 @@ export default function Profile() {
   const toggleEdit = () => {
     if (editing) {
       axios
-        .post("https://acceptable-determination-production.up.railway.app/api/profile", profile,{
+        .post("https://codequestbackend.onrender.com/api/profile", profile,{
              headers: {
                   Authorization: `Bearer ${localStorage.getItem('token')}`, // Assuming you store it as 'token'
                 },
