@@ -42,7 +42,7 @@ export default function Profile() {
       setPreviewPhoto(parsed.profilePhotoBase64 || "");
     } else {
       axios
-        .get(`http://localhost:8080/api/profile?email=${userEmail}`,{
+        .get(`https://acceptable-determination-production.up.railway.app/api/profile?email=${userEmail}`,{
             headers: {
                   Authorization: `Bearer ${localStorage.getItem('token')}`, // Assuming you store it as 'token'
                 },
@@ -78,7 +78,7 @@ export default function Profile() {
   const toggleEdit = () => {
     if (editing) {
       axios
-        .post("http://localhost:8080/api/profile", profile,{
+        .post("https://acceptable-determination-production.up.railway.app/api/profile", profile,{
              headers: {
                   Authorization: `Bearer ${localStorage.getItem('token')}`, // Assuming you store it as 'token'
                 },
