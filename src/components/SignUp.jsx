@@ -18,7 +18,7 @@ const SignUp = ({ onSignUpSuccess }) => {
     setError("");
     setLoading(true);
     try {
-      const res = await fetch("http://localhost:8080/public/signup", {
+      const res = await fetch("https://acceptable-determination-production.up.railway.app/public/signup", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ username, password, email }),
@@ -46,7 +46,7 @@ const SignUp = ({ onSignUpSuccess }) => {
     setError("");
     setLoading(true);
     try {
-      const res = await fetch("http://localhost:8080/public/verify", {
+      const res = await fetch("https://acceptable-determination-production.up.railway.app/public/verify", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email, code }),
