@@ -14,7 +14,7 @@ const Room = () => {
   // Fetch session history from backend
   const fetchHistoryFromBackend = async (name) => {
     try {
-      const res = await axios.get(`https://acceptable-determination-production.up.railway.app/api/sessions/${name}`);
+      const res = await axios.get(`https://codequestbackend.onrender.com/api/sessions/${name}`);
       setHistory(res.data);
     } catch (err) {
       console.error("Failed to fetch history:", err);
@@ -38,7 +38,7 @@ const Room = () => {
     };
 
     try {
-      await axios.post("https://acceptable-determination-production.up.railway.app/api/sessions", newSession);
+      await axios.post("https://codequestbackend.onrender.com/api/sessions", newSession);
       fetchHistoryFromBackend(name);
     } catch (error) {
       console.error("Failed to save session:", error);
