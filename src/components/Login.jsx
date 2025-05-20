@@ -25,7 +25,7 @@ const Login = ({ onLoginSuccess }) => {
     setError("");
     setLoading(true);
 
-    fetch("https://codequestbackend-production.up.railway.app/public/login", {
+    fetch("https://codequestbackend.onrender.com/public/login", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ username: email, password }),
