@@ -19,7 +19,7 @@ const WebSocketService = {
 
 
 
-    const socket = new SockJS('http://localhost:8080/ws');
+    const socket = new SockJS('https://acceptable-determination-production.up.railway.app/ws');
     this.stompClient = new Client({
       webSocketFactory: () => socket,
       reconnectDelay: 5000,
