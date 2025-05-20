@@ -135,7 +135,7 @@ const CodeEditor = ({ roomId, participant }) => {
 
   const handleRunCode = async () => {
     try {
-      const response = await axios.post("https://acceptable-determination-production.up.railway.app/api/code/run", {
+      const response = await axios.post("https://codequestbackend.onrender.com/api/code/run", {
         code,
         languageId,
         input,
