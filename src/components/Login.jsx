@@ -25,7 +25,7 @@ const Login = ({ onLoginSuccess }) => {
     setError("");
     setLoading(true);
 
-    fetch("http://localhost:8080/public/login", {
+    fetch("https://acceptable-determination-production.up.railway.app/public/login", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ username: email, password }),
