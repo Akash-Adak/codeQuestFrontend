@@ -53,9 +53,9 @@ const Login = ({ onLoginSuccess }) => {
       });
   };
 
-  const handleGoogleLogin = () => {
-    window.location.href = "http://localhost:8080/auth/google/callback";
-  };
+  // const handleGoogleLogin = () => {
+  //   window.location.href = "http://localhost:8080/auth/google/callback";
+  // };
 
   return (
     <div className="flex justify-center items-center min-h-screen bg-gray-50 dark:bg-gray-900">
@@ -118,7 +118,7 @@ const Login = ({ onLoginSuccess }) => {
           Continue with Google
         </button>
 
-        <div className="text-center text-sm text-gray-500 mt-4 dark:text-gray-400">
+{/*         <div className="text-center text-sm text-gray-500 mt-4 dark:text-gray-400">
           Don't have an account?{" "}
           <Link
             to="/signup"
@@ -126,7 +126,7 @@ const Login = ({ onLoginSuccess }) => {
           >
             Sign up
           </Link>
-        </div>
+        </div> */}
       </div>
     </div>
   );
