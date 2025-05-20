@@ -69,9 +69,9 @@ const SignUp = ({ onSignUpSuccess }) => {
   };
 
   // Optional: Google login (unchanged)
-  const handleGoogleLogin = () => {
-    window.location.href = "http://localhost:http://localhost:8080/oauth2/authorization/google";
-  };
+  // const handleGoogleLogin = () => {
+  //   window.location.href = "http://localhost:http://localhost:8080/oauth2/authorization/google";
+  // };
 
   return (
     <div className="flex justify-center items-center min-h-screen bg-gray-50 dark:bg-gray-900">
@@ -136,7 +136,7 @@ const SignUp = ({ onSignUpSuccess }) => {
               Continue with Google
             </button>
 
-            <div className="text-center text-sm text-gray-500 mt-4 dark:text-gray-400">
+{/*             <div className="text-center text-sm text-gray-500 mt-4 dark:text-gray-400">
               Already have an account?{" "}
               <Link
                 to="/login"
@@ -144,7 +144,7 @@ const SignUp = ({ onSignUpSuccess }) => {
               >
                 Login
               </Link>
-            </div>
+            </div> */}
           </>
         )}
 
