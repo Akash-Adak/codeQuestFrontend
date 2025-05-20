@@ -103,7 +103,7 @@ const InterviewPanel = () => {
   }, [chatMessages]);
 
   const connectWebSocket = () => {
-    const socket = new SockJS('https://acceptable-determination-production.up.railway.app/ws');
+    const socket = new SockJS('https://codequestbackend.onrender.com/ws');
     stompClient.current = over(socket);
     stompClient.current.connect(
       {},
@@ -169,7 +169,7 @@ const InterviewPanel = () => {
 
   const fetchParticipants = async () => {
     try {
-      const response = await axios.get(`https://acceptable-determination-production.up.railway.app/api/interview-rooms/${sessionId}/participants`);
+      const response = await axios.get(`https://codequestbackend.onrender.com/api/interview-rooms/${sessionId}/participants`);
       if (response.data) {
 
         setParticipants(response.data);
