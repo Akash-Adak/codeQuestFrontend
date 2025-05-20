@@ -102,11 +102,11 @@ const Login = ({ onLoginSuccess }) => {
           </Link>
         </div>
 
-        <div className="flex items-center justify-center my-4">
+{/*         <div className="flex items-center justify-center my-4">
           <div className="text-gray-500 dark:text-gray-400">OR</div>
-        </div>
+        </div> */}
 
-        <button
+{/*         <button
           onClick={handleGoogleLogin}
           className="w-full flex items-center justify-center py-2 border border-gray-300 rounded-md hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-indigo-500 dark:bg-gray-700 dark:hover:bg-gray-600"
         >
@@ -117,8 +117,8 @@ const Login = ({ onLoginSuccess }) => {
           />
           Continue with Google
         </button>
-
-{/*         <div className="text-center text-sm text-gray-500 mt-4 dark:text-gray-400">
+ */}
+        <div className="text-center text-sm text-gray-500 mt-4 dark:text-gray-400">
           Don't have an account?{" "}
           <Link
             to="/signup"
@@ -126,7 +126,7 @@ const Login = ({ onLoginSuccess }) => {
           >
             Sign up
           </Link>
-        </div> */}
+        </div>
       </div>
     </div>
   );
