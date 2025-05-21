@@ -46,7 +46,13 @@ const InterviewPanel = () => {
   const chatBoxRef = useRef(null);
   const location = useLocation();
   const sessionIdFromState = location?.state?.sessionId || '';
-
+const firstHalfSessionId = '';
+const secondHalfSessionId = '';
+if (sessionIdFromState.length > 0) {
+  const halfLength = Math.ceil(sessionIdFromState.length / 2);
+  firstHalfSessionId = sessionIdFromState.substring(0, halfLength);
+    secondHalfSessionId = sessionIdFromState.substring( halfLength+1,sessionIdFromState.length );
+}
   useEffect(() => {
     if (sessionIdFromState) {
       setSessionId(sessionIdFromState);
@@ -282,8 +288,10 @@ const InterviewPanel = () => {
           {sessionId && (
             <button
               onClick={() => {
-                const url = `${window.location.origin}/interviewPanel/${sessionId}`;
-                navigator.clipboard.writeText(url);
+                const url = `${window.location.origin}`;
+                const roomId=`The Room id : ${firstHalfSessionId}`;
+                const accescode=` The AccessCode :${secondHalfSessionId}`;
+                navigator.clipboard.writeText(url,roomId,accescode);
                 toast.success('Meeting link copied to clipboard!');
               }}
               className="flex items-center space-x-2 bg-green-600 hover:bg-green-700 text-white px-3 py-2 rounded-md focus:outline-none"
