@@ -37,7 +37,7 @@ const PeerMatchPage = () => {
       return;
     }
     try {
-      await axios.post('https://codequestbackend.onrender.comp/api/interview-rooms/join', null, {
+      await axios.post('https://codequestbackend.onrender.com/api/interview-rooms/join', null, {
         params: {
           roomCode: sessionId,
           accessCode: accessCodeInput,
