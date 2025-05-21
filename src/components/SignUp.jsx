@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
 
 const SignUp = ({ onSignUpSuccess }) => {
-  const [step, setStep] = useState("signup"); // "signup" or "verify"
+  const [step, setStep] = useState("signup");
   const [username, setUsername] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -12,24 +12,33 @@ const SignUp = ({ onSignUpSuccess }) => {
 
   const navigate = useNavigate();
 
-  // Step 1: Submit signup form to send verification code
+  // Regex to check password strength
+  const passwordRegex =
+    /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
+
   const handleSignUp = async (e) => {
     e.preventDefault();
     setError("");
+
+    if (!passwordRegex.test(password)) {
+      setError(
+        "Password must be at least 8 characters long and include uppercase, lowercase, number, and special character."
+      );
+      return;
+    }
+
     setLoading(true);
     try {
-      const res = await fetch("https://codequestbackend.onrender.com/public/signup", {
+      const res = await fetch("https://code-quest-frontend-three.vercel.app/public/signup", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ username, password, email }),
       });
       setLoading(false);
       if (res.ok) {
-        // Move to verification step
         setStep("verify");
-        localStorage.setItem("email",email);
-        localStorage.setItem("name",username);
-
+        localStorage.setItem("email", email);
+        localStorage.setItem("name", username);
       } else {
         const text = await res.text();
         setError(text || "Sign up failed");
@@ -40,13 +49,12 @@ const SignUp = ({ onSignUpSuccess }) => {
     }
   };
 
-  // Step 2: Submit verification code to complete signup
   const handleVerify = async (e) => {
     e.preventDefault();
     setError("");
     setLoading(true);
     try {
-      const res = await fetch("https://codequestbackend.onrender.com/public/verify", {
+      const res = await fetch("https://code-quest-frontend-three.vercel.app/public/verify", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email, code }),
@@ -54,10 +62,8 @@ const SignUp = ({ onSignUpSuccess }) => {
       setLoading(false);
       if (res.ok) {
         const data = await res.json();
-        // You can save token here or call onSignUpSuccess callback
         localStorage.setItem("token", data.token);
-        // Redirect to dashboard or login page
-        navigate("/Login"); // or "/login"
+        navigate("/Login");
       } else {
         const text = await res.text();
         setError(text || "Verification failed");
@@ -68,10 +74,25 @@ const SignUp = ({ onSignUpSuccess }) => {
     }
   };
 
-  // Optional: Google login (unchanged)
-  // const handleGoogleLogin = () => {
-  //   window.location.href = "http://localhost:http://localhost:8080/oauth2/authorization/google";
-  // };
+  const handleGoogleLogin = () => {
+    window.location.href = "https://code-quest-frontend-three.vercel.app/auth/google/authorization/google";
+
+    const urlParams = new URLSearchParams(window.location.search);
+    const code = urlParams.get("code");
+
+    if (code) {
+      fetch(`http://localhost:8080/auth/google/callback?code=${code}`, {
+        method: "GET",
+        credentials: "include",
+      })
+        .then((res) => {
+          if (res.redirected) {
+            window.location.href = res.url;
+          }
+        })
+        .catch((err) => console.error(err));
+    }
+  };
 
   return (
     <div className="flex justify-center items-center min-h-screen bg-gray-50 dark:bg-gray-900">
@@ -103,6 +124,9 @@ const SignUp = ({ onSignUpSuccess }) => {
                 onChange={(e) => setPassword(e.target.value)}
                 required
               />
+              <small className="text-xs text-gray-500 dark:text-gray-400">
+                Minimum 8 characters with uppercase, lowercase, number & special character
+              </small>
               <input
                 type="email"
                 placeholder="Email"
@@ -120,7 +144,7 @@ const SignUp = ({ onSignUpSuccess }) => {
               </button>
             </form>
 
-{/*             <div className="flex items-center justify-center my-4">
+            <div className="flex items-center justify-center my-4">
               <div className="text-gray-500 dark:text-gray-400">OR</div>
             </div>
 
@@ -134,7 +158,7 @@ const SignUp = ({ onSignUpSuccess }) => {
                 className="w-5 h-5 mr-2"
               />
               Continue with Google
-            </button> */}
+            </button>
 
             <div className="text-center text-sm text-gray-500 mt-4 dark:text-gray-400">
               Already have an account?{" "}
