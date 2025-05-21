@@ -200,13 +200,13 @@ const RoomPage = () => {
             </h3>
             <input
               type="text"
-              value={`https://code-quest-frontend-gamma.vercel.app/roompage/${roomId}`}
+              value={`https://code-quest-frontend-three.vercel.app/roompage/${roomId}`}
               readOnly
               className="w-full p-2 mb-4 bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-white rounded-md"
             />
             <button
               onClick={() => {
-                navigator.clipboard.writeText(`https://code-quest-frontend-gamma.vercel.app/roompage/${roomId}`);
+                navigator.clipboard.writeText(`https://code-quest-frontend-three.vercel.app/roompage/${roomId}`);
                 alert("📋 Link copied to clipboard!");
               }}
               className="bg-green-500 text-white px-4 py-2 rounded-md hover:bg-green-600 w-full mb-4"
