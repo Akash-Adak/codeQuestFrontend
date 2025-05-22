@@ -47,10 +47,9 @@ const InterviewPanel = () => {
   const sessionIdFromState = location?.state?.sessionId || '';
   let firstHalfSessionId = '';
   let secondHalfSessionId = '';
-  if (sessionIdFromState.length > 0) {
-    const halfLength = Math.floor(sessionIdFromState.length / 2); // Use floor for better handling of odd lengths
-    firstHalfSessionId = sessionIdFromState.substring(0, halfLength);
-    secondHalfSessionId = sessionIdFromState.substring(halfLength); // Start from halfLength to get the rest
+  if (sessionIdFromState.length === 14) { // Specifically handle length 14 for 8/6 split
+  firstHalfSessionId = sessionIdFromState.substring(0, 8); // Take the first 8 characters
+  secondHalfSessionId = sessionIdFromState.substring(8); 
   }
 
   useEffect(() => {
