@@ -46,7 +46,7 @@ const PeerMatchPage = () => {
       });
       navigate(`/interviewPanel/${sessionId+accessCode}`, {
         state: {
-          sessionId+accessCode,
+         sessionId: sessionId+accessCode,
           username: name,
         },
       });
