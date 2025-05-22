@@ -12,13 +12,13 @@ import {
 } from "@heroicons/react/outline";
 
 const dummyProfile = {
-  name: "John Doe",
-  email: "johndoe@example.com",
-  dob: "1990-01-01",
+  name: "",
+  email: "emai@example.com",
+  dob: "yyyy-mm-dd",
   city: "Unknown",
   gender: "Other",
-  linkedin: "https://linkedin.com/in/johndoe",
-  github: "https://github.com/johndoe",
+  linkedin: "https://linkedin.com/in/xxxx",
+  github: "https://github.com/xxxx",
   profilePhotoBase64: "",
 };
 
