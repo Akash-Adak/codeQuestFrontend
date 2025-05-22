@@ -1,62 +1,78 @@
-🚀 CodeQuest Frontend
-Welcome to the CodeQuest Frontend – the client-side of the collaborative coding interview platform CodeQuest. Built with React, Tailwind CSS, and WebSockets, this modern frontend offers an immersive and responsive UI for real-time interviews and coding sessions.
+# 💻 CodeQuest Frontend
 
-🎯 Features
-🎨 Fully responsive UI with Tailwind CSS & Dark Mode
+**Real-Time Collaborative Coding Interview Platform – Frontend**
 
-🧑‍💻 Real-time collaborative code editor (split screen with output)
+[![React](https://img.shields.io/badge/React-18-blue.svg)](https://reactjs.org/)  
+[![Tailwind CSS](https://img.shields.io/badge/TailwindCSS-3.x-teal.svg)](https://tailwindcss.com/)  
+[![WebSocket](https://img.shields.io/badge/WebSocket-Enabled-yellow.svg)](https://developer.mozilla.org/en-US/docs/Web/API/WebSocket)  
+[![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
 
-📦 Problem sharing from Admin to all participants
+---
 
-⏱ Interview timer and question box
+## 🧠 Overview
 
-🧑‍🤝‍🧑 Whiteboard with collaborative drawing, text, and shapes
+**CodeQuest Frontend** is the client-side application for the collaborative coding interview platform CodeQuest. Developed with **React** and **Tailwind CSS**, it provides a responsive and interactive UI enabling:
 
-🎥 Webcam and microphone integration
+- Real-time collaborative coding with WebSocket  
+- Problem sharing & interview timer  
+- Collaborative whiteboard & communication tools  
+- OAuth2-based user authentication  
+- Performance tracking and problem library management  
 
-🔐 Google OAuth2 login (via backend)
+---
 
-📊 Performance tracking UI
+## 🚀 Features
 
-📚 Problem Library UI with filters and categories
+- 🎨 Responsive UI with Tailwind CSS and Dark Mode support  
+- 👩‍💻 Real-time collaborative code editor with split output  
+- 🗂 Admin-controlled problem sharing to participants  
+- ⏲ Interview timer and question box  
+- ✍️ Collaborative whiteboard with drawing and text tools  
+- 🎥 Webcam and microphone integration  
+- 🔐 Google OAuth2 login via backend  
+- 📚 Problem Library with filters by topic and difficulty  
 
-📎 Resume upload and video resume view
+---
 
-🖥️ Support for system design, DBMS, DSA, and frontend problems
+## 🛠️ Tech Stack
 
-📂 Project Structure
-arduino
+| Technology      | Purpose                         |
+|-----------------|--------------------------------|
+| React           | Frontend UI                    |
+| Tailwind CSS    | Styling & Responsive Design    |
+| Framer Motion   | Animations                    |
+| Axios           | HTTP Client                   |
+| Socket.IO       | WebSocket Real-time Sync      |
+| CodeMirror      | Code Editor                   |
+| React Router    | Routing                      |
+
+---
+
+## 📁 Project Structure
+
+src
+├── components // Reusable UI components
+├── pages // Route pages
+├── hooks // Custom React hooks
+├── utils // Utility functions
+├── App.jsx // Main app component
+└── main.jsx // Entry point
+
+yaml
 Copy
 Edit
-CodeQuestFrontend/
-├── public/
-├── src/
-│   ├── components/
-│   ├── pages/
-│   ├── hooks/
-│   ├── utils/
-│   ├── App.jsx
-│   └── main.jsx
-└── tailwind.config.js
-🧪 Technologies Used
-React
 
-Tailwind CSS
+---
 
-Framer Motion
+## ⚙️ Getting Started
 
-Axios
+### Prerequisites
 
-WebSocket (Socket.IO)
+- Node.js and npm/yarn installed
 
-CodeMirror (for code editor)
+### Steps
 
-React Router
-
-⚙️ Getting Started
-bash
-Copy
-Edit
+```bash
 # Clone the repo
 git clone https://github.com/Akash-Adak/CodeQuestFrontend.git
 cd CodeQuestFrontend
@@ -64,32 +80,28 @@ cd CodeQuestFrontend
 # Install dependencies
 npm install
 
-# Start the development server
+# Run the development server
 npm run dev
 🔗 Related Repositories
 CodeQuest Backend (Spring Boot)
 
+🤝 Contributing
+Contributions are welcome!
+
+Fork the repo
+
+Create a feature branch
+
+Commit your changes
+
+Submit a pull request 🚀
+
 📄 License
 This project is licensed under the MIT License – see the LICENSE file for details.
 
-MIT License
-Copyright (c) 2025 Akash Adak
+👨‍💻 Author
+Akash Adak
+🔗 LinkedIn
+📧 akashadak019@gmail.com
 
-Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the "Software"), to deal
-in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the Software is
-furnished to do so, subject to the following conditions:
-
-The above copyright notice and this permission notice shall be included in all
-copies or substantial portions of the Software.
-
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-SOFTWARE.
-
+⭐ Star this repo if you find it helpful!
