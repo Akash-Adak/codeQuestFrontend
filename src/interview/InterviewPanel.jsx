@@ -422,7 +422,20 @@ const InterviewPanel = () => {
 
   };
 
+const handleCopyLink = () => {
+    // Construct the full link that someone would use to join
+    const joinURL = `${window.location.origin}/peer-match`; // Assuming a join page
+    const copyText = `Join the Interview:\nLink: ${joinURL}\nRoom ID: ${firstHalfSessionId}\nAccess Code: ${secondHalfSessionId}`;
 
+    navigator.clipboard.writeText(copyText)
+      .then(() => {
+        toast.success('Meeting details copied to clipboard!');
+      })
+      .catch((err) => {
+        console.error('Failed to copy link:', err);
+        toast.error('Failed to copy link. Please copy manually.');
+      });
+  };
 
   return (
 
@@ -566,23 +579,16 @@ const InterviewPanel = () => {
 
           {/* Copy Link */}
 
-          {sessionId && (
-
-            <button
-
-              onClick={() => {
-
-                const url = `${window.location.origin}`;
-
-                const roomId=`The Room id : ${firstHalfSessionId}`;
-
-                const accescode=` The AccessCode :${secondHalfSessionId}`;
-
-                navigator.clipboard.writeText(url,roomId,accescode);
-
-                toast.success('Meeting link copied to clipboard!');
-
-              }}
+        {sessionId && (
+            <button
+              onClick={handleCopyLink}
+              className="flex items-center space-x-2 bg-green-600 hover:bg-green-700 text-white px-3 py-2 rounded-md focus:outline-none transition-colors duration-200 text-sm"
+              title="Copy Meeting Details"
+            >
+              <FaLink className="h-4 w-4" />
+              <span>Copy Invite</span>
+            </button>
+          )}
 
               className="flex items-center space-x-2 bg-green-600 hover:bg-green-700 text-white px-3 py-2 rounded-md focus:outline-none"
 
