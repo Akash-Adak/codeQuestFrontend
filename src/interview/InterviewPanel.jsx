@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect } from 'react';
+{import React, { useState, useRef, useEffect } from 'react';
 import Webcam from 'react-webcam';
 import SockJS from 'sockjs-client';
 import { over } from 'stompjs';
@@ -50,6 +50,8 @@ const InterviewPanel = () => {
   if (sessionIdFromState.length === 14) { // Specifically handle length 14 for 8/6 split
   firstHalfSessionId = sessionIdFromState.substring(0, 8); // Take the first 8 characters
   secondHalfSessionId = sessionIdFromState.substring(8); 
+  }else{
+    console.log("session id lenfth is:"+sessionIdFromState.length);
   }
 
   useEffect(() => {
