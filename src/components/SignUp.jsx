@@ -29,7 +29,7 @@ const SignUp = ({ onSignUpSuccess }) => {
 
     setLoading(true);
     try {
-      const res = await fetch("https://code-quest-frontend-three.vercel.app/public/signup", {
+      const res = await fetch("https://codequestbackend.onrender.com/public/signup", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ username, password, email }),
@@ -54,7 +54,7 @@ const SignUp = ({ onSignUpSuccess }) => {
     setError("");
     setLoading(true);
     try {
-      const res = await fetch("https://code-quest-frontend-three.vercel.app/public/verify", {
+      const res = await fetch("https://codequestbackend.onrender.com/public/verify", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email, code }),
@@ -74,25 +74,25 @@ const SignUp = ({ onSignUpSuccess }) => {
     }
   };
 
-  const handleGoogleLogin = () => {
-    window.location.href = "https://code-quest-frontend-three.vercel.app/auth/google/authorization/google";
+  // const handleGoogleLogin = () => {
+  //   window.location.href = "https://codequestbackend.onrender.com/auth/google/authorization/google";
 
-    const urlParams = new URLSearchParams(window.location.search);
-    const code = urlParams.get("code");
+  //   const urlParams = new URLSearchParams(window.location.search);
+  //   const code = urlParams.get("code");
 
-    if (code) {
-      fetch(`http://localhost:8080/auth/google/callback?code=${code}`, {
-        method: "GET",
-        credentials: "include",
-      })
-        .then((res) => {
-          if (res.redirected) {
-            window.location.href = res.url;
-          }
-        })
-        .catch((err) => console.error(err));
-    }
-  };
+  //   if (code) {
+  //     fetch(`http://localhost:8080/auth/google/callback?code=${code}`, {
+  //       method: "GET",
+  //       credentials: "include",
+  //     })
+  //       .then((res) => {
+  //         if (res.redirected) {
+  //           window.location.href = res.url;
+  //         }
+  //       })
+  //       .catch((err) => console.error(err));
+  //   }
+  // };
 
   return (
     <div className="flex justify-center items-center min-h-screen bg-gray-50 dark:bg-gray-900">
@@ -140,7 +140,7 @@ const SignUp = ({ onSignUpSuccess }) => {
                 className="w-full py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 dark:bg-indigo-500 dark:hover:bg-indigo-600"
                 disabled={loading}
               >
-                {loading ? "Signing Up..." : "Sign Up"}
+               {loading ? "Creating your account..." : "Sign Up"}
               </button>
             </form>
 
@@ -148,7 +148,7 @@ const SignUp = ({ onSignUpSuccess }) => {
               <div className="text-gray-500 dark:text-gray-400">OR</div>
             </div>
 
-            <button
+{/*             <button
               onClick={handleGoogleLogin}
               className="w-full flex items-center justify-center py-2 border border-gray-300 rounded-md hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-indigo-500 dark:bg-gray-700 dark:hover:bg-gray-600"
             >
@@ -158,7 +158,7 @@ const SignUp = ({ onSignUpSuccess }) => {
                 className="w-5 h-5 mr-2"
               />
               Continue with Google
-            </button>
+            </button> */}
 
             <div className="text-center text-sm text-gray-500 mt-4 dark:text-gray-400">
               Already have an account?{" "}
