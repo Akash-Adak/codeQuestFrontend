@@ -41,11 +41,11 @@ const SignUp = ({ onSignUpSuccess }) => {
         localStorage.setItem("name", username);
       } else {
         const text = await res.text();
-        setError(text || "Sign up failed");
+        setError(text || "Sign up failed in backend");
       }
     } catch {
       setLoading(false);
-      setError("Sign up failed");
+      setError("Sign up failed in frontend");
     }
   };
 
