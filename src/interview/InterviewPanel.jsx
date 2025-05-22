@@ -1,4 +1,4 @@
-{import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import Webcam from 'react-webcam';
 import SockJS from 'sockjs-client';
 import { over } from 'stompjs';
