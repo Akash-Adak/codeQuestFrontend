@@ -82,6 +82,7 @@ npm install
 
 # Run the development server
 npm run dev
+```
 🔗 Related Repositories
 CodeQuest Backend (Spring Boot)
 
