@@ -176,7 +176,7 @@ const InterviewPanel = () => {
 
   const fetchParticipants = async () => {
     try {
-      const response = await axios.get(`https://codequestbackend.onrender.com/api/interview-rooms/${sessionId}/participants`);
+      const response = await axios.get(`https://codequestbackend.onrender.com/api/interview-rooms/${firstHalfSessionId}/participants`);
       if (response.data) {
         setParticipants(response.data);
       }
