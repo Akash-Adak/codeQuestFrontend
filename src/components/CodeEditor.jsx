@@ -15,16 +15,9 @@ import {
   SiJavascript,
   SiCplusplus,
   SiC,
-  SiKotlin,
-  SiGo,
-  SiTypescript,
   SiPhp,
-  SiRuby,
   SiSwift,
-  SiScala,
-  SiR,
-  SiRust,
-  SiDart,
+
 } from "react-icons/si";
 import { toast } from "react-toastify";
 
@@ -46,40 +39,13 @@ const initialCodeTemplates = {
     printf("Hello, World!\\n");
     return 0;
   }`, // C
-  73: `fun main() {
-    println("Hello, World!")
-  }`, // Kotlin
-  65: `package main
-  import "fmt"
-  func main() {
-    fmt.Println("Hello, World!")
-  }`, // Go
-  78: `console.log('Hello, World!');`, // TypeScript (same as JS for basic)
+
   68: `<?php
   echo "Hello, World!\\n";
   ?>`, // PHP
-  76: `puts "Hello, World!"`, // Ruby
   85: `import Swift
   print("Hello, World!")`, // Swift
-  86: `object Main extends App {
-    println("Hello, World!")
-  }`, // Scala
-  47: `#!/bin/bash
-  echo "Hello, World!"`, // Bash
-  91: `print("Hello, World!")`, // R
-  80: `#import <Foundation/Foundation.h>
-  int main(int argc, const char * argv[]) {
-    @autoreleasepool {
-      NSLog(@"Hello, World!");
-    }
-    return 0;
-  }`, // Objective-C
-  77: `fn main() {
-    println!("Hello, World!");
-  }`, // Rust
-  83: `void main() {
-    print('Hello, World!');
-  }`, // Dart
+ 
 };
 
 const CodeEditor = ({ roomId, participant }) => {
@@ -163,18 +129,9 @@ const CodeEditor = ({ roomId, participant }) => {
       63: "javascript",
       54: "cpp",
       50: "c",
-      73: "kotlin",
-      65: "go",
-      78: "typescript",
       68: "php",
-      76: "ruby",
       85: "swift",
-      86: "scala",
-      47: "bash",
-      91: "r",
-      80: "objective-c",
-      77: "rust",
-      83: "dart",
+
     };
     setLanguage(langMap[val] || "");
   };
@@ -192,26 +149,13 @@ const CodeEditor = ({ roomId, participant }) => {
         return <SiCplusplus style={iconStyle} />;
       case "50":
         return <SiC style={iconStyle} />;
-      case "73":
-        return <SiKotlin style={iconStyle} />;
-      case "65":
-        return <SiGo style={iconStyle} />;
-      case "78":
-        return <SiTypescript style={iconStyle} />;
+
       case "68":
         return <SiPhp style={iconStyle} />;
-      case "76":
-        return <SiRuby style={iconStyle} />;
+
       case "85":
         return <SiSwift style={iconStyle} />;
-      case "86":
-        return <SiScala style={iconStyle} />;
-      case "91":
-        return <SiR style={iconStyle} />;
-      case "77":
-        return <SiRust style={iconStyle} />;
-      case "83":
-        return <SiDart style={iconStyle} />;
+    
       default:
         return <SiC style={iconStyle} />; // Default to C icon
     }
@@ -327,18 +271,9 @@ const CodeEditor = ({ roomId, participant }) => {
               <option value="63">JavaScript</option>
               <option value="54">C++</option>
               <option value="50">C</option>
-              <option value="73">Kotlin</option>
-              <option value="65">Go</option>
-              <option value="78">TypeScript</option>
               <option value="68">PHP</option>
-              <option value="76">Ruby</option>
               <option value="85">Swift</option>
-              <option value="86">Scala</option>
-              <option value="47">Bash</option>
-              <option value="91">R</option>
-              <option value="80">Objective-C</option>
-              <option value="77">Rust</option>
-              <option value="83">Dart</option>
+            
             </select>
           </div>
           <button
